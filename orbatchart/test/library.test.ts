@@ -1,11 +1,23 @@
-import {Symbol} from 'milsymbol';
 import { DEFAULT_OPTIONS, OrbatChart } from "../src/orbchart";
 import { Unit } from "../src/types";
+import { ORBAT1 } from "./testorbats";
+
+// @ts-ignore
+SVGElement.prototype.getBBox = () => {
+  return { x: 0, y: 0, width: 20, height: 10 }
+};
 
 describe("OrbatChart class", () => {
   it("is defined", () => {
     expect(OrbatChart).toBeDefined();
   });
+
+  it("renders", () => {
+    let o = new OrbatChart(ORBAT1);
+    let svg = o.toSVG({}, document.body);
+    expect(svg.getAttribute("width")).toBe("100%");
+
+  })
 });
 
 const DUMMY_UNIT: Unit = {
@@ -26,7 +38,7 @@ describe("OrbatChart options", () => {
   });
 
   it("override default values", () => {
-    let ob = new OrbatChart(DUMMY_UNIT,{symbolSize:13, maxLevels:4});
+    let ob = new OrbatChart(DUMMY_UNIT, { symbolSize: 13, maxLevels: 4 });
     expect(ob.options.symbolSize).toBe(13);
     expect(ob.options.connectorOffset).toBe(DEFAULT_OPTIONS.connectorOffset);
     expect(ob.options.maxLevels).toBe(4);

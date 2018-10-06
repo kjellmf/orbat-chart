@@ -95,7 +95,7 @@ class OrbatChart {
     }
   }
 
-  toSVG(size: Partial<Size>, parent: Element) {
+  toSVG(size: Partial<Size>, parent: Element): Element  {
     this.width = size.width || 600;
     this.height = size.height || 600;
     parent.innerHTML = "";
@@ -184,7 +184,7 @@ class OrbatChart {
       });
     });
 
-    return svg.node();
+    return svg.node() as Element;
   }
 
   private _computeOrbatInfo(rootNode: Unit) {
