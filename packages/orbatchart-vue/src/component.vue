@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 
 import Vue from "vue";
 import OrbatChart from "orbatchart";
@@ -58,7 +58,7 @@ export default Vue.extend({
     });
     this.orbchart = orbchart;
     if (this.isMounted) {
-      let svg = orbchart.toSVG({width: 1920, height: 1080}, this.$el) as any;
+      let svg = orbchart.toSVG({width: 1920, height: 1080}, this.$el);
     }
 
     return h("div", {

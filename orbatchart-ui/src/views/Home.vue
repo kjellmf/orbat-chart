@@ -7,7 +7,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 
-import OrbatChart from "@/components/OrbatChart.vue";
+import OrbatChart from "orbatchart-vue";
 import { Unit } from "orbatchart";
 
 const ORBAT1: Unit = {
