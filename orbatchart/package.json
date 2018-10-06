@@ -14,7 +14,11 @@
     "test": "jest",
     "test:watch": "jest --watch"
   },
-  "author": "",
+  "author": "Kjell Magne Fauske <kjellmf@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kjellmf/orbat-chart.git"
+  },
   "license": "MIT",
   "jest": {
     "transform": {

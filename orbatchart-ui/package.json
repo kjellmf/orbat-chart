@@ -2,6 +2,11 @@
   "name": "orbchart-ui",
   "version": "0.1.0",
   "private": true,
+  "author": "Kjell Magne Fauske <kjellmf@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kjellmf/orbat-chart.git"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

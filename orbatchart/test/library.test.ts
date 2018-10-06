@@ -16,7 +16,6 @@ describe("OrbatChart class", () => {
     let o = new OrbatChart(ORBAT1);
     let svg = o.toSVG({}, document.body);
     expect(svg.getAttribute("width")).toBe("100%");
-
   })
 });
 
