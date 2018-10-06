@@ -1,7 +1,6 @@
 .DS_Store
 node_modules
-dist/
-coverage/
+/dist
 
 # local env files
 .env.local
@@ -19,6 +18,4 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
-
-# Rollup cache
-.rpt2_cache/
+*.sw*
