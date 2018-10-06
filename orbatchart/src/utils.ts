@@ -1,9 +1,9 @@
-import { UnitNodeVisitorCallback } from "./types";
+import { Unit, UnitNodeVisitorCallback } from "./types";
 
-export function walkTree(root, callback: UnitNodeVisitorCallback) {
+export function walkTree(root: Unit, callback: UnitNodeVisitorCallback) {
   let level = 0;
 
-  function helper(currentUnit, parent) {
+  function helper(currentUnit: Unit, parent: Unit|null) {
     callback(currentUnit, level, parent);
     if (currentUnit.subUnits) {
       level += 1;

@@ -3,7 +3,7 @@ export interface Size {
   height: number
 }
 
-export type OnClickCallback = (unit: any) => void;
+export type OnClickCallback = (unit: Unit) => void;
 
 export interface OrbChartOptions {
   symbolSize: number;
@@ -13,4 +13,12 @@ export interface OrbChartOptions {
   connectorOffset: number;
 }
 
-export type UnitNodeVisitorCallback = (unit: any, level: number, parent: any | null) => void
+export type UnitNodeVisitorCallback = (unit: Unit, level: number, parent: Unit | null) => void
+
+export interface Unit {
+  name: string;
+  sidc: string;
+  shortName?: string;
+  subUnits?: Unit[];
+  id:string;
+}

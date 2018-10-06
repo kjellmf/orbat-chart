@@ -1,7 +1,7 @@
 import { Symbol } from "milsymbol";
 import { select } from "d3-selection";
 import { walkTree } from "./utils";
-import { OrbChartOptions, Size } from "./types";
+import { OrbChartOptions, Size, Unit } from "./types";
 
 const CHART_STYLE = `
 .o-line {
@@ -26,7 +26,7 @@ export const DEFAULT_OPTIONS = {
   connectorOffset: 5,
 } as OrbChartOptions;
 
-function getNodeInfo(node: any, options: Partial<OrbChartOptions>) {
+function getNodeInfo(node: Unit, options: Partial<OrbChartOptions>) {
   const symb = new Symbol(
     node.sidc,
     { size: options.symbolSize },
@@ -82,7 +82,7 @@ class OrbatChart {
   levels: Array<any>[] = [];
   svg;
 
-  constructor(private rootNode, options: Partial<OrbChartOptions> = {}) {
+  constructor(private rootNode: Unit, options: Partial<OrbChartOptions> = {}) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
     if (rootNode) this._computeOrbatInfo(rootNode);
   }
@@ -187,7 +187,7 @@ class OrbatChart {
     return svg.node();
   }
 
-  private _computeOrbatInfo(rootNode) {
+  private _computeOrbatInfo(rootNode: Unit) {
     let levels: Array<any>[] = [];
     const nodeMap = {};
 
