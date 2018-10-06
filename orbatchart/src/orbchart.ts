@@ -1,4 +1,4 @@
-import ms from "milsymbol";
+import { Symbol } from "milsymbol";
 import { select } from "d3-selection";
 import { walkTree } from "./utils";
 import { OrbChartOptions, Size } from "./types";
@@ -19,7 +19,7 @@ const CHART_STYLE = `
 }
 `;
 
-const DEFAULT_OPTIONS = {
+export const DEFAULT_OPTIONS = {
   symbolSize: 32, // symbol symbolSize
   maxLevels: 0,
   debug: false,
@@ -27,7 +27,7 @@ const DEFAULT_OPTIONS = {
 } as OrbChartOptions;
 
 function getNodeInfo(node: any, options: Partial<OrbChartOptions>) {
-  const symb = new ms.Symbol(
+  const symb = new Symbol(
     node.sidc,
     { size: options.symbolSize },
     // {uniqueDesignation: node.shortName || node.name},
@@ -84,7 +84,7 @@ class OrbatChart {
 
   constructor(private rootNode, options: Partial<OrbChartOptions> = {}) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
-    this._computeOrbatInfo(rootNode);
+    if (rootNode) this._computeOrbatInfo(rootNode);
   }
 
   cleanup() {
