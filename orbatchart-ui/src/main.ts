@@ -4,7 +4,6 @@ import router from './router';
 import store from './store';
 import OrbatChart from 'orbatchart/src/index';
 
-const tt = new OrbatChart(null, { connectorOffset: 12 });
 
 Vue.config.productionTip = false;
 

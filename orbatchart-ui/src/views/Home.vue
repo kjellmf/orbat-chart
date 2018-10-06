@@ -1,18 +1,53 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <orbat-chart :unit="orbat"/>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+
+import OrbatChart from "@/components/OrbatChart.vue";
+import { Unit } from "orbatchart";
+
+const ORBAT1: Unit = {
+  name: "A Bde",
+  sidc: "10031000181211004600",
+  id: "sdsdfsdfsdf",
+  subUnits: [
+    {
+      name: "Btn",
+      sidc: "10031000161211004600",
+      id: "u0xGEGuOLzIcIirsioK0h",
+      subUnits: [
+        {
+          name: "A",
+          sidc: "10031000151211004600",
+          id: "IZI2tUkYvhmVxShmC8~n~",
+        },
+        {
+          name: "B",
+          sidc: "10031000151211004600",
+          id: "bJewqRWgkcxt3Lt53sz_c",
+        },
+        {
+          name: "C",
+          sidc: "10031000151211004600",
+          id: "1ytAWaNFpcrYFLuGetut1",
+        }
+      ]
+    }
+  ]
+};
+
 
 @Component({
   components: {
-    HelloWorld,
+    OrbatChart,
   },
 })
-export default class Home extends Vue {}
+export default class Home extends Vue {
+  orbat = ORBAT1;
+
+}
 </script>
