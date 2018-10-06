@@ -1,23 +1,7 @@
 import ms from "milsymbol";
 import { select } from "d3-selection";
 import { walkTree } from "./utils";
-
-export type OnClickCallback = (unit: any) => void;
-
-export interface Size {
-  width?: number;
-  height?: number
-}
-interface NOrbChartOptions {
-  symbolSize: number;
-  maxLevels: number;
-  debug: boolean;
-  onClick: OnClickCallback;
-  connectorOffset: number;
-}
-
-export interface OrbChartOptions extends Partial<NOrbChartOptions> {
-}
+import { OrbChartOptions, Size } from "./types";
 
 const CHART_STYLE = `
 .o-line {
@@ -40,9 +24,9 @@ const DEFAULT_OPTIONS = {
   maxLevels: 0,
   debug: false,
   connectorOffset: 5,
-} as NOrbChartOptions;
+} as OrbChartOptions;
 
-function getNodeInfo(node: any, options: OrbChartOptions) {
+function getNodeInfo(node: any, options: Partial<OrbChartOptions>) {
   const symb = new ms.Symbol(
     node.sidc,
     { size: options.symbolSize },
@@ -91,15 +75,15 @@ function createUnitGroup(parent, node, options) {
   return g;
 }
 
-class OrbChart {
+class OrbatChart {
   width!: number;
   height!: number;
-  options: NOrbChartOptions;
+  options: OrbChartOptions;
   levels: Array<any>[] = [];
   svg;
 
-  constructor(private rootNode, options: OrbChartOptions = {}) {
-    this.options = Object.assign(DEFAULT_OPTIONS, options) as NOrbChartOptions;
+  constructor(private rootNode, options: Partial<OrbChartOptions> = {}) {
+    this.options = { ...DEFAULT_OPTIONS, ...options };
     this._computeOrbatInfo(rootNode);
   }
 
@@ -111,7 +95,7 @@ class OrbChart {
     }
   }
 
-  toSVG(size: Size, parent: Element) {
+  toSVG(size: Partial<Size>, parent: Element) {
     this.width = size.width || 600;
     this.height = size.height || 600;
     parent.innerHTML = "";
@@ -204,8 +188,7 @@ class OrbChart {
   }
 
   private _computeOrbatInfo(rootNode) {
-    //var levels = [];
-    var levels: Array<any>[] = [];
+    let levels: Array<any>[] = [];
     const nodeMap = {};
 
     walkTree(rootNode, (unit, level, parent) => {
@@ -240,5 +223,5 @@ class OrbChart {
   }
 }
 
-export { OrbChart };
+export { OrbatChart };
 

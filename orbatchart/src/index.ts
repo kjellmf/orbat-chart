@@ -1,3 +1,3 @@
-import { OrbChart } from "./orbchart";
+import { OrbatChart } from "./orbchart";
 
-export default OrbChart;
+export default OrbatChart;

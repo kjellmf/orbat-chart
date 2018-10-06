@@ -1,10 +1,7 @@
-import { OrbChart } from "../src/orbchart";
+import { OrbatChart } from "../src/orbchart";
 
-/**
- * Dummy test
- */
-describe("Dummy test", () => {
+describe("OrbatChart class", () => {
   it("is defined", () => {
-    expect(OrbChart).toBeDefined();
+    expect(OrbatChart).toBeDefined();
   });
 });

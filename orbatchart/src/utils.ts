@@ -1,5 +1,6 @@
+import { UnitNodeVisitorCallback } from "./types";
 
-export function walkTree(root, callback) {
+export function walkTree(root, callback: UnitNodeVisitorCallback) {
   let level = 0;
 
   function helper(currentUnit, parent) {
@@ -16,6 +17,6 @@ export function walkTree(root, callback) {
   helper(root, null);
 }
 
-export function createElement(element_name) {
-  return document.createElementNS('http://www.w3.org/2000/svg', element_name);
+export function createElement(elementName) {
+  return document.createElementNS('http://www.w3.org/2000/svg', elementName);
 }
