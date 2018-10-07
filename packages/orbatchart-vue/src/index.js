@@ -1,11 +1,11 @@
 // Import vue component
-import component from './component.vue';
+import OrbatChartVue from './OrbatChart.vue';
 
 // install function executed by Vue.use()
 export function install(Vue) {
 	if (install.installed) return;
 	install.installed = true;
-	Vue.component('OrbatChart', component);
+	Vue.component('OrbatChart', OrbatChartVue);
 }
 
 // Create module definition for Vue.use()
@@ -25,7 +25,7 @@ if (GlobalVue) {
 }
 
 // To allow use as module (npm/webpack/etc.) export component
-export default component;
+export default OrbatChartVue;
 
 // It's possible to expose named exports when writing components that can
 // also be used as directives, etc. - eg. import { RollupDemoDirective } from 'rollup-demo';
