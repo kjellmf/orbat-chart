@@ -9,17 +9,18 @@
   },
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "build": "vue-cli-service build --modern",
+    "lint": "vue-cli-service lint",
+    "deploy": "vue-cli-ghpages --CNAME=orbat-chart.milsymb.net"
   },
   "dependencies": {
+    "orbatchart": "*",
+    "orbatchart-vue": "*",
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1",
-    "orbatchart": "*",
-    "orbatchart-vue": "*"
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.4",
@@ -27,7 +28,8 @@
     "@vue/cli-service": "^3.0.4",
     "typescript": "^3.0.0",
     "vue-cli-plugin-vuetify": "^0.2.0",
-    "vue-template-compiler": "^2.5.17"
+    "vue-template-compiler": "^2.5.17",
+    "vue-cli-ghpages": "^1.0.0"
   },
   "postcss": {
     "plugins": {
