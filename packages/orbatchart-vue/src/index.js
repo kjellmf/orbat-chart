@@ -1,5 +1,5 @@
 // Import vue component
-import OrbatChartVue from './OrbatChart.vue';
+import OrbatChartVue from '../../../orbatchart-ui/src/components/OrbatChart.vue';
 
 // install function executed by Vue.use()
 export function install(Vue) {

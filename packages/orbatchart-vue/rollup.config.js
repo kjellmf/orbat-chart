@@ -1,21 +1,30 @@
 // rollup.config.js
 import vue from 'rollup-plugin-vue';
 import buble from 'rollup-plugin-buble';
+import pkg from "./package.json";
 
 
 const config = {
-    input: 'src/index.js',
-    output: {
-        name: 'OrbatChart',
-        exports: 'named',
+  input: 'src/index.js',
+  output: {
+    name: 'OrbatChart',
+    exports: 'named',
+    globals: {
+      'vue': 'Vue',
+      'orbatchart': 'OrbatChart'
     },
-    plugins: [
-        vue({
-            css: true,
-            compileTemplate: true,
-        }),
-        buble(),
-    ],
+  },
+  external: [
+    ...Object.keys(pkg.dependencies || {}),
+    ...Object.keys(pkg.peerDependencies || {}),
+  ],
+  plugins: [
+    vue({
+      css: true,
+      compileTemplate: true,
+    }),
+    buble(),
+  ],
 };
 
 export default config;
