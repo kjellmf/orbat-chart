@@ -14,12 +14,14 @@
     "deploy": "vue-cli-ghpages --CNAME=orbat-chart.milsymb.net"
   },
   "dependencies": {
+    "milsymbol": "^2.0.0-rc4",
     "orbatchart": "*",
     "orbatchart-vue": "*",
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
     "vue-router": "^3.0.1",
+    "vuetify": "^1.2.9",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
