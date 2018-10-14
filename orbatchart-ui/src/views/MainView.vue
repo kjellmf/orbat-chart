@@ -1,7 +1,11 @@
 <template>
   <v-layout fill-height>
-    <v-flex >
-      <orbat-chart :unit="orbat" class="px-0 py-0 home"/>
+    <v-flex class="panel" style="z-index:3">
+      <slide-panel v-model="orbatPanel" header-title='ORBAT' @onSlide="onSlide">
+      </slide-panel>
+    </v-flex>
+    <v-flex>
+      <orbat-chart :unit="orbat" class="px-0 py-0 home" @unitclick="onUnitClick"/>
     </v-flex>
   </v-layout>
 </template>
@@ -9,7 +13,8 @@
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator';
 
-import OrbatChart from "orbatchart-vue";
+import OrbatChart from "../components/OrbatChart.vue";
+import SlidePanel from "../components/SlidePanel.vue";
 import {Unit} from "orbatchart";
 
 const ORBAT1: Unit = {
@@ -46,17 +51,27 @@ const ORBAT1: Unit = {
 @Component({
   components: {
     OrbatChart,
+    SlidePanel
   },
 })
 export default class Home extends Vue {
   orbat = ORBAT1;
+  orbatPanel = true;
+  onSlide() {
+    //console.log("Slick'n slide")
+  };
+
+  onUnitClick(unit) {
+    console.log("Clikked", unit)
+  }
+
+
 
 }
 </script>
 
 <style scoped>
 .home {
-
   overflow-y: auto;
 }
 </style>
