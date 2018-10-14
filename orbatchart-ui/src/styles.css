@@ -1,0 +1,16 @@
+
+html {
+  overflow: auto
+
+}
+
+.sidebar {
+  background-color: #212121;
+  color: #fff;
+  flex: 0;
+  z-index: 2;
+}
+
+.panel {
+  flex: 0;
+}

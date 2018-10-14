@@ -1,14 +1,16 @@
 <template>
-  <div class="home">
-    <orbat-chart :unit="orbat"/>
-  </div>
+  <v-layout fill-height>
+    <v-flex >
+      <orbat-chart :unit="orbat" class="px-0 py-0 home"/>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import {Component, Vue} from 'vue-property-decorator';
 
 import OrbatChart from "orbatchart-vue";
-import { Unit } from "orbatchart";
+import {Unit} from "orbatchart";
 
 const ORBAT1: Unit = {
   name: "A Bde",
@@ -51,3 +53,10 @@ export default class Home extends Vue {
 
 }
 </script>
+
+<style scoped>
+.home {
+
+  overflow-y: auto;
+}
+</style>
