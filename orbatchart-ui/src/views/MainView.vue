@@ -16,37 +16,9 @@ import {Component, Vue} from 'vue-property-decorator';
 import OrbatChart from "../components/OrbatChart.vue";
 import SlidePanel from "../components/SlidePanel.vue";
 import {Unit} from "orbatchart";
+import testOrbat from "../testorbat.json";
 
-const ORBAT1: Unit = {
-  name: "A Bde",
-  sidc: "10031000181211004600",
-  id: "sdsdfsdfsdf",
-  subUnits: [
-    {
-      name: "Btn",
-      sidc: "10031000161211004600",
-      id: "u0xGEGuOLzIcIirsioK0h",
-      subUnits: [
-        {
-          name: "A",
-          sidc: "10031000151211004600",
-          id: "IZI2tUkYvhmVxShmC8~n~",
-        },
-        {
-          name: "B",
-          sidc: "10031000151211004600",
-          id: "bJewqRWgkcxt3Lt53sz_c",
-        },
-        {
-          name: "C",
-          sidc: "10031000151211004600",
-          id: "1ytAWaNFpcrYFLuGetut1",
-        }
-      ]
-    }
-  ]
-};
-
+const ORBAT1: Unit = testOrbat;
 
 @Component({
   components: {
@@ -54,8 +26,8 @@ const ORBAT1: Unit = {
     SlidePanel
   },
 })
-export default class Home extends Vue {
-  orbat = ORBAT1;
+export default class MainView extends Vue {
+  orbat:Unit = ORBAT1;
   orbatPanel = true;
   onSlide() {
     //console.log("Slick'n slide")

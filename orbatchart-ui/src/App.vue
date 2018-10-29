@@ -22,7 +22,7 @@
             <v-toolbar-side-icon @click.stop="drawer = !drawer" dark></v-toolbar-side-icon>
           </v-flex>
           <v-flex>
-            <router-view></router-view>
+            <router-view/>
           </v-flex>
         </v-layout>
       </v-container>
