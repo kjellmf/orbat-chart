@@ -2,6 +2,17 @@
   <v-layout fill-height>
     <v-flex class="panel" style="z-index:3">
       <slide-panel v-model="orbatPanel" header-title='ORBAT' @onSlide="onSlide">
+        <v-treeview
+          :items="tree"
+          open-on-click
+          open-all
+          activatable
+          item-children="subUnits"
+        >
+          <template slot="prepend" slot-scope="{ item, open, leaf }">
+            <mil-symbol :sidc="item.sidc"/>
+          </template>
+        </v-treeview>
       </slide-panel>
     </v-flex>
     <v-flex>
@@ -11,11 +22,12 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
 import OrbatChart from "../components/OrbatChart.vue";
 import SlidePanel from "../components/SlidePanel.vue";
-import {Unit} from "orbatchart";
+import MilSymbol from "../components/MilSymbol.vue";
+import { Unit } from "orbatchart";
 import testOrbat from "../testorbat.json";
 
 const ORBAT1: Unit = testOrbat;
@@ -23,12 +35,15 @@ const ORBAT1: Unit = testOrbat;
 @Component({
   components: {
     OrbatChart,
-    SlidePanel
+    SlidePanel,
+    MilSymbol,
   },
 })
 export default class MainView extends Vue {
-  orbat:Unit = ORBAT1;
+  orbat: Unit = ORBAT1;
+  tree = [ORBAT1]
   orbatPanel = true;
+
   onSlide() {
     //console.log("Slick'n slide")
   };
@@ -38,12 +53,11 @@ export default class MainView extends Vue {
   }
 
 
-
 }
 </script>
 
 <style scoped>
-.home {
-  overflow-y: auto;
-}
+  .home {
+    overflow-y: auto;
+  }
 </style>
