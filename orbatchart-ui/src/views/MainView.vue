@@ -2,17 +2,7 @@
   <v-layout fill-height>
     <v-flex class="panel" style="z-index:3">
       <slide-panel v-model="orbatPanel" header-title='ORBAT' @onSlide="onSlide">
-        <v-treeview
-          :items="tree"
-          open-on-click
-          open-all
-          activatable
-          item-children="subUnits"
-        >
-          <template slot="prepend" slot-scope="{ item, open, leaf }">
-            <mil-symbol :sidc="item.sidc"/>
-          </template>
-        </v-treeview>
+        <OrbatTree :rootUnits="tree"/>
       </slide-panel>
     </v-flex>
     <v-flex>
@@ -22,18 +12,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import {Component, Vue} from 'vue-property-decorator';
 
 import OrbatChart from "../components/OrbatChart.vue";
 import SlidePanel from "../components/SlidePanel.vue";
 import MilSymbol from "../components/MilSymbol.vue";
-import { Unit } from "orbatchart";
+import {Unit} from "orbatchart";
 import testOrbat from "../testorbat.json";
+import OrbatTree from "../components/OrbatTree.vue";
 
 const ORBAT1: Unit = testOrbat;
 
 @Component({
   components: {
+    OrbatTree,
     OrbatChart,
     SlidePanel,
     MilSymbol,
@@ -41,23 +33,25 @@ const ORBAT1: Unit = testOrbat;
 })
 export default class MainView extends Vue {
   orbat: Unit = ORBAT1;
-  tree = [ORBAT1]
+  tree = [ORBAT1];
+  currentUnit = null;
   orbatPanel = true;
 
   onSlide() {
     //console.log("Slick'n slide")
   };
 
+
   onUnitClick(unit) {
-    console.log("Clikked", unit)
+    this.currentUnit = unit;
+    console.log("Clicked", unit.node.name);
   }
-
-
 }
+
 </script>
 
 <style scoped>
-  .home {
-    overflow-y: auto;
-  }
+.home {
+  overflow-y: auto;
+}
 </style>
