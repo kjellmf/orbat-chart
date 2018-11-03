@@ -25,11 +25,26 @@ export default class OrbatTree extends Vue {
   @Prop()
   rootUnits: Unit[];
 
-  onUnitClick(unit: string[]) {
-    if (!unit.length) return;
-    console.log("Clicked", unit);
+  unitMap: Map<string | number, Unit>;
+
+  created() {
+    this.unitMap = new Map();
+    this.buildUnitMap(this.rootUnits);
   }
 
+  onUnitClick(unitKey: (string | number)[]) {
+    if (!unitKey.length) return;
+    this.$emit("selectUnit", this.unitMap.get(unitKey[0]));
+  }
+
+  private buildUnitMap(units: Unit[]) {
+    for (const unit of units) {
+      this.unitMap.set(unit.id, unit);
+      if (unit.subUnits && unit.subUnits.length) {
+        this.buildUnitMap(unit.subUnits)
+      }
+    }
+  }
 }
 </script>
 
