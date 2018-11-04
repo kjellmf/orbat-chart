@@ -1,3 +1,11 @@
+const path = require('path');
 module.exports = {
-  lintOnSave: false
-}
+  lintOnSave: false,
+  configureWebpack: {
+    resolve: {
+      alias: {
+        'milsymbol': path.resolve(path.join(__dirname, 'node_modules', 'milsymbol'))
+      },
+    },
+  }
+};
