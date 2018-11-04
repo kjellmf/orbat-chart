@@ -8,6 +8,11 @@
     <template slot="prepend" slot-scope="{ item, open, leaf }">
       <MilSymbol :sidc="item.sidc"/>
     </template>
+    <template slot="append" slot-scope="{ item }">
+      <v-icon v-if="item.id == currentUnitKey" class="pr-1">
+        my_location
+      </v-icon>
+    </template>
   </v-treeview>
 </template>
 
@@ -24,17 +29,20 @@ import { Unit } from "orbatchart";
 export default class OrbatTree extends Vue {
   @Prop()
   rootUnits: Unit[];
+  currentUnitKey: string | number = null;
 
   unitMap: Map<string | number, Unit>;
 
   created() {
     this.unitMap = new Map();
     this.buildUnitMap(this.rootUnits);
+    this.currentUnitKey = this.rootUnits[0].id;
   }
 
   onUnitClick(unitKey: (string | number)[]) {
     if (!unitKey.length) return;
-    this.$emit("selectUnit", this.unitMap.get(unitKey[0]));
+    this.currentUnitKey = unitKey[0];
+    this.$emit("selectunit", this.unitMap.get(unitKey[0]));
   }
 
   private buildUnitMap(units: Unit[]) {

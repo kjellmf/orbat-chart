@@ -98,8 +98,7 @@
                       "name": "29 FB",
                       "sidc": "10031000151303000000",
                       "state": [],
-                      "id": "vydX8pjg7sB1t37a5pBN1",
-                      "subUnits": []
+                      "id": "vydX8pjg7sB1t37a5pBN1"
                     },
                     {
                       "name": "43 AD",
@@ -197,7 +196,6 @@
                   "sidc": "10031000161211000000",
                   "id": "gkcIswEB_vLPW_a3NCJzx",
                   "state": [],
-                  "subUnits": [],
                   "shortName": "WG"
                 },
                 {
@@ -205,7 +203,6 @@
                   "sidc": "10031000161211000000",
                   "id": "ugu_gHIyde1iuwHYC34_k",
                   "state": [],
-                  "subUnits": [],
                   "shortName": "7 GR"
                 },
                 {

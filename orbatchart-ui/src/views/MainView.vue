@@ -2,11 +2,11 @@
   <v-layout fill-height>
     <v-flex class="panel" style="z-index:3">
       <SlidePanel v-model="orbatPanel" header-title='ORBAT' @onSlide="onSlide">
-        <OrbatTree :rootUnits="tree"/>
+        <OrbatTree :rootUnits="tree" @selectunit="onSelectUnit"/>
       </SlidePanel>
     </v-flex>
     <v-flex>
-      <OrbatChart :unit="orbat" class="px-0 py-0 home" @unitclick="onUnitClick"/>
+      <OrbatChart :unit="currentUnit" class="px-0 py-0 home" @unitclick="onUnitClick"/>
     </v-flex>
   </v-layout>
 </template>
@@ -37,14 +37,21 @@ export default class MainView extends Vue {
   currentUnit = null;
   orbatPanel = true;
 
+  created() {
+    this.currentUnit = this.tree[0]
+  }
+
   onSlide() {
     //console.log("Slick'n slide")
   };
 
 
   onUnitClick(unit) {
-    this.currentUnit = unit;
     console.log("Clicked", unit.node.name);
+  }
+
+  onSelectUnit(unit: Unit) {
+    this.currentUnit = unit;
   }
 }
 
