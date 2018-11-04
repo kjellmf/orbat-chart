@@ -17,10 +17,10 @@ export default Vue.extend({
   },
 
   render(h) {
-    let symb = new ms.Symbol(this.sidc, {size: this.size, simpleStatusModifier: true}, this.modifiers || {});
+    let symb = new ms.Symbol(this.sidc, { size: this.size, simpleStatusModifier: true }, this.modifiers || {});
     return h('span', {
-      attrs: {class: 'milsymbol'},
-      domProps: {innerHTML: symb.asSVG()}
+      attrs: { class: 'milsymbol' },
+      domProps: { innerHTML: symb.asSVG() }
     })
   }
 });

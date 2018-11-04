@@ -57,37 +57,37 @@ export default {
 
 <style scoped>
 
-.spanel {
-  height: 100%;
-  background: #fafafa;
-}
+  .spanel {
+    height: 100%;
+    background: #fafafa;
+  }
 
-.slide {
-  width: 400px;
-  height: 100%;
-  border-right: 1px solid #d3d3d3;
-}
+  .slide {
+    width: 400px;
+    height: 100%;
+    border-right: 1px solid #d3d3d3;
+  }
 
-.large > .slide {
-  width: 600px;
-}
+  .large > .slide {
+    width: 600px;
+  }
 
-.slide-content {
-  max-height: calc(100vh - 48px);
-  overflow: auto;
-}
+  .slide-content {
+    max-height: calc(100vh - 48px);
+    overflow: auto;
+  }
 
-.slide-enter-active, .slide-leave-active {
-  transition: all 0.3s ease;
-}
+  .slide-enter-active, .slide-leave-active {
+    transition: all 0.3s ease;
+  }
 
-.slide-enter, .slide-leave-to {
-  margin-left: -400px;
-}
+  .slide-enter, .slide-leave-to {
+    margin-left: -400px;
+  }
 
-.large > .slide-enter,
-.large > .slide-leave-to {
-  margin-left: -600px;
-}
+  .large > .slide-enter,
+  .large > .slide-leave-to {
+    margin-left: -600px;
+  }
 
 </style>

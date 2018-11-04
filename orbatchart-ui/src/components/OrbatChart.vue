@@ -6,7 +6,7 @@ import OrbatChart from "orbatchart";
 export default Vue.extend({
   name: "OrbatChart",
   props: {
-    unit: {type: Object, required:true},
+    unit: {type: Object, required: true},
     levels: {type: Number, default: 3},
     debug: {type: Boolean, default: false},
     symbolSize: {type: Number, default: 32}
@@ -73,12 +73,12 @@ export default Vue.extend({
 </script>
 
 <style>
-.orbat-chart {
-  width: 100%;
-  height: 80%;
-  padding: 0;
-  margin: 0;
-}
+  .orbat-chart {
+    width: 100%;
+    height: 80%;
+    padding: 0;
+    margin: 0;
+  }
 
 
 </style>

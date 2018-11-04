@@ -1,23 +1,23 @@
 <template>
   <v-layout fill-height>
     <v-flex class="panel" style="z-index:3">
-      <slide-panel v-model="orbatPanel" header-title='ORBAT' @onSlide="onSlide">
+      <SlidePanel v-model="orbatPanel" header-title='ORBAT' @onSlide="onSlide">
         <OrbatTree :rootUnits="tree"/>
-      </slide-panel>
+      </SlidePanel>
     </v-flex>
     <v-flex>
-      <orbat-chart :unit="orbat" class="px-0 py-0 home" @unitclick="onUnitClick"/>
+      <OrbatChart :unit="orbat" class="px-0 py-0 home" @unitclick="onUnitClick"/>
     </v-flex>
   </v-layout>
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
 import OrbatChart from "../components/OrbatChart.vue";
 import SlidePanel from "../components/SlidePanel.vue";
 import MilSymbol from "../components/MilSymbol.vue";
-import {Unit} from "orbatchart";
+import { Unit } from "orbatchart";
 import testOrbat from "../testorbat.json";
 import OrbatTree from "../components/OrbatTree.vue";
 
@@ -51,7 +51,7 @@ export default class MainView extends Vue {
 </script>
 
 <style scoped>
-.home {
-  overflow-y: auto;
-}
+  .home {
+    overflow-y: auto;
+  }
 </style>
