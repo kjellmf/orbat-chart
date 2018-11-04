@@ -7,7 +7,7 @@ export default Vue.extend({
   name: "OrbatChart",
   props: {
     unit: {type: Object, required:true},
-    levels: {type: Number, default: 0},
+    levels: {type: Number, default: 3},
     debug: {type: Boolean, default: false},
     symbolSize: {type: Number, default: 32}
   },
