@@ -2,7 +2,7 @@
   <v-layout fill-height>
     <v-flex class="panel" style="z-index:3">
       <SlidePanel v-model="orbatPanel" header-title='ORBAT' @onSlide="onSlide">
-        <OrbatTree :rootUnits="tree" @selectunit="onSelectUnit"/>
+        <OrbatTree :rootUnits="orbat" @selectunit="onSelectUnit"/>
       </SlidePanel>
     </v-flex>
     <v-flex>
@@ -13,15 +13,15 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { mixins } from 'vue-class-component';
 
 import OrbatChart from "../components/OrbatChart.vue";
 import SlidePanel from "../components/SlidePanel.vue";
 import MilSymbol from "../components/MilSymbol.vue";
 import { Unit } from "orbatchart";
-import testOrbat from "../testorbat.json";
-import OrbatTree from "../components/OrbatTree.vue";
 
-const ORBAT1: Unit = testOrbat;
+import OrbatTree from "../components/OrbatTree.vue";
+import { PanelMixins } from "../components/mixins";
 
 @Component({
   components: {
@@ -30,15 +30,23 @@ const ORBAT1: Unit = testOrbat;
     SlidePanel,
     MilSymbol,
   },
+  mixins: [PanelMixins],
 })
-export default class MainView extends Vue {
-  orbat: Unit = ORBAT1;
-  tree = [ORBAT1];
-  currentUnit = null;
-  orbatPanel = true;
-
+export default class MainView extends mixins(PanelMixins) {
   created() {
-    this.currentUnit = this.tree[0]
+    this.currentUnit = this.orbat[0]
+  }
+
+  get orbat(): Unit[] {
+    return this.$store.state.orbat;
+  }
+
+  get currentUnit(): Unit {
+    return this.$store.state.currentUnit;
+  }
+
+  set currentUnit(unit: Unit) {
+    this.$store.commit("setCurrentUnit", unit)
   }
 
   onSlide() {
