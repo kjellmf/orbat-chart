@@ -11,4 +11,12 @@ export class PanelMixins extends Vue {
   set orbatPanel(v) {
     this.$store.commit("setOrbatPanel", v);
   }
+
+  get settingsPanel() {
+    return this.$store.state.settingsPanel;
+  }
+
+  set settingsPanel(v) {
+    this.$store.commit("setSettingsPanel", v);
+  }
 }

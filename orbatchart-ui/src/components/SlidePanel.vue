@@ -63,7 +63,7 @@ export default {
   }
 
   .slide {
-    width: 400px;
+    width: 350px;
     height: 100%;
     border-right: 1px solid #d3d3d3;
   }

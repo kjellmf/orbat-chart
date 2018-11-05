@@ -28,6 +28,14 @@
             >
               ORB
             </v-btn>
+            <v-btn
+              flat icon dark
+              @click="settingsPanel = !settingsPanel"
+              :class="{'v-btn--active': settingsPanel}"
+              title="Toggle settings panel"
+            >
+              <v-icon>settings</v-icon>
+            </v-btn>
           </v-flex>
           <v-flex>
             <router-view/>

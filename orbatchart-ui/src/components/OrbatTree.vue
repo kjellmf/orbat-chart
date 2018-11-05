@@ -9,7 +9,7 @@
       <MilSymbol :sidc="item.sidc"/>
     </template>
     <template slot="append" slot-scope="{ item }">
-      <v-icon v-if="item.id == currentUnitKey" class="pr-1">
+      <v-icon v-if="item.id == currentUnitKey" class="pr-3">
         my_location
       </v-icon>
     </template>
