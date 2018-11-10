@@ -14,11 +14,15 @@
             label="Levels"
           />
           <v-text-field
-
-        label="Symbol size"
-        type="number" min="5"
-        v-model.number="settings.symbolSize"
-      />
+            label="Symbol size"
+            type="number" min="5"
+            v-model.number="settings.symbolSize"
+          />
+          <v-text-field
+            label="Connector offset"
+            type="number" min="0"
+            v-model.number="settings.connectorOffset"
+          />
           <v-checkbox
             label="Debug"
             v-model="settings.debug"
@@ -31,9 +35,7 @@
         :unit="currentUnit"
         class="px-0 py-0 home"
         @unitclick="onUnitClick"
-        :levels="settings.maxLevels"
-        :debug="settings.debug"
-         :symbolSize="settings.symbolSize"
+        v-bind="settings"
       />
     </v-flex>
   </v-layout>

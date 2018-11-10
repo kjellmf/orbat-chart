@@ -2,6 +2,7 @@
 
 import Vue from "vue";
 import OrbatChart from "orbatchart";
+import {DEFAULT_OPTIONS} from "orbatchart";
 
 export default Vue.extend({
   name: "OrbatChart",
@@ -9,7 +10,8 @@ export default Vue.extend({
     unit: {type: Object, required: true},
     levels: {type: Number, default: 3},
     debug: {type: Boolean, default: false},
-    symbolSize: {type: Number, default: 32}
+    symbolSize: {type: Number, default: 32},
+    connectorOffset: {type: Number, default: DEFAULT_OPTIONS.connectorOffset}
   },
   data: () => ({
     resizeTimeout: null,
@@ -54,7 +56,8 @@ export default Vue.extend({
       maxLevels: this.levels,
       debug: this.debug,
       symbolSize: this.symbolSize,
-      onClick: this.onClick
+      onClick: this.onClick,
+      connectorOffset: this.connectorOffset,
     });
     this.orbchart = orbchart;
     if (this.isMounted) {
