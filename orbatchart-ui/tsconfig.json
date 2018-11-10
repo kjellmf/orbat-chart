@@ -34,7 +34,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "../packages/orbatchart/src/",
+    "../packages/orbatchart/src/**/*.ts",
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],
