@@ -18,6 +18,9 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "orbatchart": [
+        "../packages/orbatchart/src/"
       ]
     },
     "lib": [
@@ -31,6 +34,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
+    "../packages/orbatchart/src/",
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],

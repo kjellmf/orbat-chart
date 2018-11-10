@@ -4,7 +4,8 @@ module.exports = {
   configureWebpack: {
     resolve: {
       alias: {
-        'milsymbol': path.resolve(path.join(__dirname, 'node_modules', 'milsymbol'))
+        'milsymbol': path.resolve(path.join(__dirname, 'node_modules', 'milsymbol')),
+        'orbatchart': path.resolve(path.join(__dirname, '../packages/orbatchart/src', ))
       },
     },
   }
