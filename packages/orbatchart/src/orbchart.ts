@@ -1,7 +1,7 @@
 import { Symbol } from "milsymbol";
 import { select } from "d3-selection";
 import { walkTree } from "./utils";
-import { OrbChartOptions, Size, Unit } from "./types";
+import { NodeInfo, OrbChartOptions, Point, Size, Unit } from "./types";
 
 const CHART_STYLE = `
 .o-line {
@@ -26,28 +26,27 @@ export const DEFAULT_OPTIONS = {
   connectorOffset: 5,
 } as OrbChartOptions;
 
-function getNodeInfo(node: Unit, options: Partial<OrbChartOptions>) {
+function getNodeInfo(node: Unit, options: Partial<OrbChartOptions>): NodeInfo {
   const symb = new Symbol(
     node.sidc,
     { size: options.symbolSize },
     // {uniqueDesignation: node.shortName || node.name},
   );
-  const size = symb.getSize();
-  const anchor = symb.getAnchor();
-  const octagonAnchor = symb.getOctagonAnchor();
+  const size: Size = symb.getSize();
+  const anchor: Point = symb.getAnchor();
+  const octagonAnchor: Point = symb.getOctagonAnchor();
   return {
     size, anchor, octagonAnchor, symb, x: null, y: null, parent: null, node,
   };
 }
 
-function putGroupAt(g: any, node: any, x: number, y: number) {
+function putGroupAt(g: any, node: NodeInfo, x: number, y: number) {
   const dx = x - node.octagonAnchor.x;
   const dy = y - node.octagonAnchor.y;
   return g.attr("transform", `translate(${dx}, ${dy})`);
-
 }
 
-function createUnitGroup(parent, node, options) {
+function createUnitGroup(parent, node: NodeInfo, options: OrbChartOptions) {
   const g = parent.append("g")
     .attr("class", "o-unit");
   let rect = g.append("rect")
@@ -61,6 +60,7 @@ function createUnitGroup(parent, node, options) {
     .attr("class", "o-label")
     .text(node.node.name);
   const bbox = g.node().getBBox();
+
   if (options.debug) {
     rect = rect
       .attr("x", bbox.x)
@@ -79,12 +79,13 @@ class OrbatChart {
   width!: number;
   height!: number;
   options: OrbChartOptions;
-  levels: Array<any>[] = [];
+  levels: Array<NodeInfo>[][] = [];
   svg;
 
   constructor(private rootNode: Unit, options: Partial<OrbChartOptions> = {}) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
     if (rootNode) this._computeOrbatInfo(rootNode);
+
   }
 
   cleanup() {
@@ -95,7 +96,7 @@ class OrbatChart {
     }
   }
 
-  toSVG(size: Partial<Size>, parent: Element): Element  {
+  toSVG(size: Partial<Size>, parent: Element): Element {
     this.width = size.width || 600;
     this.height = size.height || 600;
     parent.innerHTML = "";
@@ -109,14 +110,15 @@ class OrbatChart {
     svg.attr("width", "100%");
     svg.attr("height", "100%");
 
-    // for debugging only
-    const rect = svg.append("rect")
-      .attr("fill", "none")
-      .attr("stroke", "red")
-      .attr("y", "0")
-      .attr("x", "0")
-      .attr("width", this.width)
-      .attr("height", this.height);
+    if (options.debug) {
+      const rect = svg.append("rect")
+        .attr("fill", "none")
+        .attr("stroke", "red")
+        .attr("y", "0")
+        .attr("x", "0")
+        .attr("width", this.width)
+        .attr("height", this.height);
+    }
 
     const nLevels = this.levels.length;
     this.levels.forEach((level, yIdx) => {
@@ -144,25 +146,13 @@ class OrbatChart {
           putGroupAt(unitGroup, unit, x, y);
 
           if (unit.parent) {
-            const dx = x - unit.parent.x;
             const dy = y - ((y - unit.parent.y) / 2);
             const d = `M ${x}, ${y - unit.octagonAnchor.y - options.connectorOffset} V ${dy}`;
             svg.append("path")
               .attr("d", d)
               .classed("o-line", true);
           }
-
-          /*if (unit.parent) {
-            const dx = x - unit.parent.x;
-            const dy = y - ((y - unit.parent.y) / 2);
-            const d = `M ${x}, ${y - unit.octagonAnchor.y - options.connectorOffset} V ${dy} H ${unit.parent.x} V ${unit.parent.ly + options.connectorOffset}`;
-            svg.append("path")
-              .attr("d", d)
-              .classed("o-line", true);
-          }*/
           xIdx += 1;
-
-
         });
         let first = unitLevelGroup[0];
         if (!first.parent) return;
@@ -188,8 +178,10 @@ class OrbatChart {
   }
 
   private _computeOrbatInfo(rootNode: Unit) {
-    let levels: Array<any>[] = [];
+    let levels: NodeInfo[][] = [];
+    let nlevels: NodeInfo[][][] = [];
     const nodeMap = {};
+
 
     walkTree(rootNode, (unit, level, parent) => {
       const nodeInfo = getNodeInfo(unit, this.options);
@@ -204,7 +196,7 @@ class OrbatChart {
 
     // group each level by parent
     levels.forEach((level, yIdx) => {
-      let nlevel = level.reduce((accumulator, currentValue, currentIndex, array) => {
+      let nlevel: NodeInfo[][] = level.reduce((accumulator, currentValue, currentIndex, array) => {
         if (currentIndex === 0) {
           accumulator.push([currentValue]);
           return accumulator;
@@ -217,9 +209,9 @@ class OrbatChart {
         return accumulator;
       }, []);
 
-      levels[yIdx] = nlevel
+      nlevels[yIdx] = nlevel;
     });
-    this.levels = levels;
+    this.levels = nlevels;
   }
 }
 
