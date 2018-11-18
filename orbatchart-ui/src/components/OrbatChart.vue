@@ -8,7 +8,7 @@ export default Vue.extend({
   name: "OrbatChart",
   props: {
     unit: {type: Object, required: true},
-    levels: {type: Number, default: 3},
+    maxLevels: {type: Number, default: 3},
     debug: {type: Boolean, default: false},
     symbolSize: {type: Number, default: 32},
     connectorOffset: {type: Number, default: DEFAULT_OPTIONS.connectorOffset}
@@ -53,7 +53,7 @@ export default Vue.extend({
       this.orbchart.cleanup();
     }
     let orbchart = new OrbatChart(this.unit, {
-      maxLevels: this.levels,
+      maxLevels: this.maxLevels,
       debug: this.debug,
       symbolSize: this.symbolSize,
       onClick: this.onClick,
