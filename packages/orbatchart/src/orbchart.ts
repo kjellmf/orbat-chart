@@ -36,7 +36,7 @@ function getNodeInfo(node: Unit, options: Partial<OrbChartOptions>): NodeInfo {
   const anchor: Point = symb.getAnchor();
   const octagonAnchor: Point = symb.getOctagonAnchor();
   return {
-    size, anchor, octagonAnchor, symb, x: null, y: null, parent: null, node,
+    size, anchor, octagonAnchor, symb, node, x: 0, y: 0, ly: 0
   };
 }
 
@@ -196,7 +196,7 @@ class OrbatChart {
 
     // group each level by parent
     levels.forEach((level, yIdx) => {
-      let nlevel: NodeInfo[][] = level.reduce((accumulator, currentValue, currentIndex, array) => {
+      let nlevel: NodeInfo[][] = level.reduce((accumulator:NodeInfo[][], currentValue, currentIndex, array) => {
         if (currentIndex === 0) {
           accumulator.push([currentValue]);
           return accumulator;

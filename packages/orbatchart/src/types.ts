@@ -17,9 +17,9 @@ export interface NodeInfo {
   symb: Symbol;
   x: number;
   y: number;
-  parent: NodeInfo;
+  parent?: NodeInfo;
   node: Unit;
-  ly?:number;
+  ly:number;
 }
 
 export type OnClickCallback = (unit: Unit) => void;
