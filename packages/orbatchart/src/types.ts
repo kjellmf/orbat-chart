@@ -1,4 +1,4 @@
-import { Symbol } from "milsymbol";
+import { Symbol, SymbolOptions } from "milsymbol";
 
 export interface Size {
   width: number;
@@ -23,6 +23,7 @@ export interface NodeInfo {
 }
 
 export type OnClickCallback = (unit: Unit) => void;
+export type SymbolGenerator = (sidc: string, options: SymbolOptions) => Symbol;
 
 export interface OrbChartOptions {
   symbolSize: number;
@@ -30,6 +31,7 @@ export interface OrbChartOptions {
   debug: boolean;
   onClick: OnClickCallback;
   connectorOffset: number;
+  symbolGenerator: SymbolGenerator;
 }
 
 export type UnitNodeVisitorCallback = (unit: Unit, level: number, parent: Unit | null) => void

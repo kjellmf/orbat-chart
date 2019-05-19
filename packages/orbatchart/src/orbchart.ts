@@ -27,11 +27,17 @@ export const DEFAULT_OPTIONS = {
 } as OrbChartOptions;
 
 function getNodeInfo(node: Unit, options: Partial<OrbChartOptions>): NodeInfo {
-  const symb = new Symbol(
-    node.sidc,
-    { size: options.symbolSize },
-    // {uniqueDesignation: node.shortName || node.name},
-  );
+  let symb;
+  const symbolOptions = { size: options.symbolSize };
+  if (options.symbolGenerator) {
+    symb = options.symbolGenerator(node.sidc, symbolOptions);
+  } else {
+    symb = new Symbol(
+      node.sidc,
+      symbolOptions,
+      // {uniqueDesignation: node.shortName || node.name},
+    );
+  }
   const size: Size = symb.getSize();
   const anchor: Point = symb.getAnchor();
   const octagonAnchor: Point = symb.getOctagonAnchor();
@@ -196,7 +202,7 @@ class OrbatChart {
 
     // group each level by parent
     levels.forEach((level, yIdx) => {
-      let nlevel: NodeInfo[][] = level.reduce((accumulator:NodeInfo[][], currentValue, currentIndex, array) => {
+      let nlevel: NodeInfo[][] = level.reduce((accumulator: NodeInfo[][], currentValue, currentIndex, array) => {
         if (currentIndex === 0) {
           accumulator.push([currentValue]);
           return accumulator;
