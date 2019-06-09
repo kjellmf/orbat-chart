@@ -27,6 +27,12 @@
             label="Debug"
             v-model="settings.debug"
           />
+          <v-select
+            disabled
+            label="Orientation"
+            :items="orientation"
+            v-model="settings.orientation"
+          />
         </v-container>
       </SlidePanel>
     </v-flex>
@@ -48,10 +54,16 @@ import { mixins } from 'vue-class-component';
 import OrbatChart from "../components/OrbatChart.vue";
 import SlidePanel from "../components/SlidePanel.vue";
 import MilSymbol from "../components/MilSymbol.vue";
-import { OrbChartOptions, Unit } from "orbatchart";
+import { ChartOrientation, OrbChartOptions, Unit } from "orbatchart";
 
-import OrbatTree from "../components/OrbatTree.vue";
-import { PanelMixins } from "../components/mixins";
+import OrbatTree from "@/components/OrbatTree.vue";
+import { PanelMixins } from "@/components/mixins";
+
+function getMap(myEnum) {
+  return Object.entries(myEnum).map(([key, value]) => {
+    return { text: key, value }
+  });
+}
 
 @Component({
   components: {
@@ -64,7 +76,7 @@ import { PanelMixins } from "../components/mixins";
 })
 export default class MainView extends mixins(PanelMixins) {
   created() {
-    this.currentUnit = this.orbat[0]
+    this.currentUnit = this.orbat[0];
   }
 
   get orbat(): Unit[] {
@@ -81,6 +93,10 @@ export default class MainView extends mixins(PanelMixins) {
 
   set currentUnit(unit: Unit) {
     this.$store.commit("setCurrentUnit", unit)
+  }
+
+  get orientation() {
+    return getMap(ChartOrientation);
   }
 
   onSlide() {

@@ -1,7 +1,7 @@
 import { Symbol } from "milsymbol";
 import { select } from "d3-selection";
 import { walkTree } from "./utils";
-import { NodeInfo, OrbChartOptions, Point, Size, Unit } from "./types";
+import { ChartOrientation, NodeInfo, OrbChartOptions, Point, Size, Unit } from "./types";
 
 const CHART_STYLE = `
 .o-line {
@@ -24,6 +24,7 @@ export const DEFAULT_OPTIONS = {
   maxLevels: 0,
   debug: false,
   connectorOffset: 5,
+  orientation: ChartOrientation.Top,
 } as OrbChartOptions;
 
 export const DEFAULT_CHART_WIDTH = 600;
@@ -153,7 +154,11 @@ class OrbatChart {
           }
           const unitGroupBbox = unitGroup.node().getBBox();
           unit.ly = y + (unitGroupBbox.height - unit.octagonAnchor.y);
-          putGroupAt(unitGroup, unit, x, y);
+          if (this.options.orientation === ChartOrientation.Bottom) {
+            putGroupAt(unitGroup, unit, x, this.height - y);
+          } else {
+            putGroupAt(unitGroup, unit, x, y);
+          }
 
           if (unit.parent) {
             const dy = y - ((y - unit.parent.y) / 2);

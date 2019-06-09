@@ -1,5 +1,5 @@
 import { DEFAULT_OPTIONS, OrbatChart } from "../src/orbchart";
-import { NodeInfo, SymbolGenerator, Unit } from "../src/types";
+import { ChartOrientation, NodeInfo, SymbolGenerator, Unit } from "../src/types";
 import { ORBAT1 } from "./testorbats";
 import { Symbol } from "milsymbol";
 
@@ -67,5 +67,17 @@ describe("Symbol generator", () => {
     let nodeInfo: NodeInfo = ob.levels[0][0][0];
     let symbolOptions = nodeInfo.symb.getOptions();
     expect(symbolOptions["sidc"]).toBe(dummy_sidc)
+  })
+});
+
+describe("OrbatChart orientation", () => {
+  it("default value is 'TOP'", () => {
+    let ob = new OrbatChart(DUMMY_UNIT);
+    expect(ob.options.orientation).toBe(ChartOrientation.Top);
+  });
+
+  it("value can be changed", () => {
+    let ob = new OrbatChart(DUMMY_UNIT, { orientation: ChartOrientation.Bottom });
+    expect(ob.options.orientation).toBe(ChartOrientation.Bottom);
   })
 });

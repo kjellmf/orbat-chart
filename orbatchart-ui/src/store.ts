@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { OrbChartOptions, Unit } from "orbatchart";
-import { DEFAULT_OPTIONS } from "orbatchart";
+import { ChartOrientation, DEFAULT_OPTIONS, OrbChartOptions, Unit } from "orbatchart";
 
 Vue.use(Vuex);
 
@@ -18,7 +17,7 @@ const state = <State>{
   orbatPanel: true,
   settingsPanel: true,
   currentUnit: null,
-  chartOptions: { ...DEFAULT_OPTIONS, maxLevels:3 }
+  chartOptions: { ...DEFAULT_OPTIONS, maxLevels: 3 }
 };
 
 export default new Vuex.Store({

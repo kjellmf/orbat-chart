@@ -11,7 +11,8 @@ export default Vue.extend({
     maxLevels: {type: Number, default: 3},
     debug: {type: Boolean, default: false},
     symbolSize: {type: Number, default: 32},
-    connectorOffset: {type: Number, default: DEFAULT_OPTIONS.connectorOffset}
+    connectorOffset: {type: Number, default: DEFAULT_OPTIONS.connectorOffset},
+    orientation: {type: String, default: DEFAULT_OPTIONS.orientation}
   },
   data: () => ({
     resizeTimeout: null,
@@ -58,6 +59,7 @@ export default Vue.extend({
       symbolSize: this.symbolSize,
       onClick: this.onClick,
       connectorOffset: this.connectorOffset,
+      orientation: this.orientation,
     });
     this.orbchart = orbchart;
     if (this.isMounted) {
