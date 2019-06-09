@@ -1,5 +1,12 @@
 import { Symbol, SymbolOptions } from "milsymbol";
 
+export enum ChartOrientation {
+  Top = "TOP",
+  Bottom = "BOTTOM",
+  Left = "LEFT",
+  Right = "RIGHT"
+}
+
 export interface Size {
   width: number;
   height: number
@@ -32,6 +39,7 @@ export interface OrbChartOptions {
   onClick: OnClickCallback;
   connectorOffset: number;
   symbolGenerator: SymbolGenerator;
+  orientation: ChartOrientation;
 }
 
 export type UnitNodeVisitorCallback = (unit: Unit, level: number, parent: Unit | null) => void
