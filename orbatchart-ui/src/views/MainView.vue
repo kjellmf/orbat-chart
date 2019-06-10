@@ -7,33 +7,7 @@
     </v-flex>
     <v-flex class="panel" style="z-index:2">
       <SlidePanel v-model="settingsPanel" header-title='Settings'>
-        <v-container fluid>
-          <v-text-field
-            v-model.number="settings.maxLevels"
-            type="number"
-            label="Levels"
-          />
-          <v-text-field
-            label="Symbol size"
-            type="number" min="5"
-            v-model.number="settings.symbolSize"
-          />
-          <v-text-field
-            label="Connector offset"
-            type="number" min="0"
-            v-model.number="settings.connectorOffset"
-          />
-          <v-checkbox
-            label="Debug"
-            v-model="settings.debug"
-          />
-          <v-select
-            disabled
-            label="Orientation"
-            :items="orientation"
-            v-model="settings.orientation"
-          />
-        </v-container>
+        <SettingsPanel/>
       </SlidePanel>
     </v-flex>
     <v-flex>
@@ -58,21 +32,16 @@ import { ChartOrientation, OrbChartOptions, Unit } from "orbatchart";
 
 import OrbatTree from "@/components/OrbatTree.vue";
 import { PanelMixins } from "@/components/mixins";
-
-function getMap(myEnum) {
-  return Object.entries(myEnum).map(([key, value]) => {
-    return { text: key, value }
-  });
-}
+import SettingsPanel from "@/components/SettingsPanel.vue";
 
 @Component({
   components: {
+    SettingsPanel,
     OrbatTree,
     OrbatChart,
     SlidePanel,
     MilSymbol,
   },
-  mixins: [PanelMixins],
 })
 export default class MainView extends mixins(PanelMixins) {
   created() {
@@ -87,16 +56,8 @@ export default class MainView extends mixins(PanelMixins) {
     return this.$store.state.currentUnit;
   }
 
-  get settings(): OrbChartOptions {
-    return this.$store.state.chartOptions;
-  }
-
   set currentUnit(unit: Unit) {
     this.$store.commit("setCurrentUnit", unit)
-  }
-
-  get orientation() {
-    return getMap(ChartOrientation);
   }
 
   onSlide() {

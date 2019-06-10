@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Component from 'vue-class-component'
+import { OrbChartOptions } from "orbatchart";
 
 @Component
 export class PanelMixins extends Vue {
@@ -18,5 +19,9 @@ export class PanelMixins extends Vue {
 
   set settingsPanel(v) {
     this.$store.commit("setSettingsPanel", v);
+  }
+
+  get settings(): OrbChartOptions {
+    return this.$store.state.chartOptions;
   }
 }
