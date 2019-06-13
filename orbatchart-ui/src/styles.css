@@ -14,3 +14,9 @@ html {
 .panel {
   flex: 0;
 }
+
+@media print {
+  .sidebar, .slide {
+    display: none;
+  }
+}
