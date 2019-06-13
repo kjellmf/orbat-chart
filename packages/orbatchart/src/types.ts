@@ -17,15 +17,15 @@ export interface Point {
   y: number;
 }
 
-export interface NodeInfo {
+export interface UnitNodeInfo {
   size: Size;
   anchor: Point;
   octagonAnchor: Point;
   symb: Symbol;
   x: number;
   y: number;
-  parent?: NodeInfo;
-  node: Unit;
+  parent?: UnitNodeInfo;
+  unit: Unit;
   ly: number;
 }
 

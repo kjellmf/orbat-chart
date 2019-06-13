@@ -66,7 +66,7 @@ export default class MainView extends mixins(PanelMixins) {
 
 
   onUnitClick(unit) {
-    console.log("Clicked", unit.node.name);
+    console.log("Clicked", unit.unit.name);
   }
 
   onSelectUnit(unit: Unit) {
