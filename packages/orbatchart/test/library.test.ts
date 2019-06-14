@@ -64,7 +64,7 @@ describe("Symbol generator", () => {
       return new Symbol(dummy_sidc, options)
     };
     let ob = new OrbatChart(DUMMY_UNIT, { symbolGenerator: customGenerator });
-    let nodeInfo: UnitNodeInfo = ob.levels[0][0][0];
+    let nodeInfo: UnitNodeInfo = ob.groupedLevels[0][0][0];
     let symbolOptions = nodeInfo.symb.getOptions();
     expect(symbolOptions["sidc"]).toBe(dummy_sidc)
   })

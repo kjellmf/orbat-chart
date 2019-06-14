@@ -18,7 +18,7 @@ export interface Point {
 }
 
 export interface UnitNodeInfo {
-  size: Size;
+  symbolBoxSize: Size;
   anchor: Point;
   octagonAnchor: Point;
   symb: Symbol;
@@ -27,6 +27,10 @@ export interface UnitNodeInfo {
   parent?: UnitNodeInfo;
   unit: Unit;
   ly: number;
+}
+
+export interface BBoxUnitNodeInfo extends UnitNodeInfo {
+  bbox: DOMRect;
 }
 
 export type OnClickCallback = (unit: Unit) => void;
