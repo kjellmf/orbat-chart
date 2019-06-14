@@ -8,7 +8,7 @@ export interface State {
   orbat: Unit[];
   orbatPanel: boolean;
   settingsPanel: boolean;
-  currentUnit: Unit;
+  currentUnit: Unit | null;
   chartOptions: Partial<OrbChartOptions>;
 }
 

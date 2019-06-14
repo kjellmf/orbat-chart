@@ -28,10 +28,10 @@ import { Unit } from "orbatchart";
 })
 export default class OrbatTree extends Vue {
   @Prop()
-  rootUnits: Unit[];
-  currentUnitKey: string | number = null;
+  rootUnits!: Unit[];
+  currentUnitKey: string | number | null= null;
 
-  unitMap: Map<string | number, Unit>;
+  unitMap!: Map<string | number, Unit>;
 
   created() {
     this.unitMap = new Map();
