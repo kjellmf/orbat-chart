@@ -4,6 +4,8 @@ import { walkTree } from "./utils";
 import { ChartOrientation, UnitNodeInfo, OrbChartOptions, Point, Size, Unit, BBoxUnitNodeInfo } from "./types";
 
 type SVGElementSelection = Selection<SVGElement, any, any, any>;
+type GElementSelection = Selection<SVGGElement, any, any, any>;
+type RectElementSelection = Selection<SVGRectElement, any, any, any>;
 
 const CHART_STYLE = `
 .o-line {
@@ -52,20 +54,36 @@ function createUnitNodeInfo(unit: Unit, options: Partial<OrbChartOptions>): Unit
   };
 }
 
-function putGroupAt(g: any, node: UnitNodeInfo, x: number, y: number) {
+function putGroupAt(g: GElementSelection, node: UnitNodeInfo, x: number, y: number) {
   const dx = x - node.octagonAnchor.x;
   const dy = y - node.octagonAnchor.y;
   return g.attr("transform", `translate(${dx}, ${dy})`);
 }
 
-function createUnitGroup(parentElement, unitNode: UnitNodeInfo, options: OrbChartOptions) {
+function createDebugRect(g: GElementSelection): RectElementSelection {
+  return g.append<SVGRectElement>("rect")
+    .classed("o-rect", true);
+}
+
+function styleDebugRect(rectElement: RectElementSelection, bbox: DOMRect, fill = "#ccc") {
+  rectElement
+    .attr("x", bbox.x)
+    .attr("y", bbox.y)
+    .attr("width", bbox.width)
+    .attr("height", bbox.height)
+    .style("fill", fill)
+    .style("fill-opacity", ".4")
+    .style("stroke", "#666")
+    .style("stroke-width", "1.5px");
+}
+
+function createUnitGroup(parentElement: GElementSelection, unitNode: UnitNodeInfo, options: OrbChartOptions) {
   let rect;
-  const g = parentElement.append("g")
+  const g = parentElement.append<SVGGElement>("g")
     .attr("class", "o-unit");
   if (options.debug) {
     // put debug rect here so that it is drawn behind the unit symbol
-    rect = g.append("rect")
-      .classed("o-rect", true);
+    rect = createDebugRect(g);
   }
   const g2 = g.append("g")
     .html(unitNode.symb.asSVG());
@@ -76,18 +94,9 @@ function createUnitGroup(parentElement, unitNode: UnitNodeInfo, options: OrbChar
     .attr("class", "o-label")
     .text(unitNode.unit.name);
   let bbUnitNode = <BBoxUnitNodeInfo>unitNode;
-  bbUnitNode.bbox = g.node().getBBox();
+  bbUnitNode.bbox = g.node()!.getBBox();
   if (options.debug) {
-    let bbox = bbUnitNode.bbox;
-    rect = rect
-      .attr("x", bbox.x)
-      .attr("y", bbox.y)
-      .attr("width", bbox.width)
-      .attr("height", bbox.height)
-      .style("fill", "#ccc")
-      .style("fill-opacity", ".3")
-      .style("stroke", "#666")
-      .style("stroke-width", "1.5px");
+    styleDebugRect(rect, bbUnitNode.bbox);
   }
   return { unitGroup: g, bbUnitNode };
 }
@@ -124,19 +133,27 @@ class OrbatChart {
     this._setupSvgElement(svg);
     const numberOfLevels = this.groupedLevels.length;
     this.groupedLevels.forEach((currentLevel, yIdx) => {
+      let levelRect;
       if (options.maxLevels && yIdx >= options.maxLevels) {
         return;
       }
+      let levelGElement = this.svg.append<SVGGElement>("g")
+        .attr("class", "o-level");
+      if (this.options.debug) levelRect = createDebugRect(levelGElement);
       const unitsOnLevel = currentLevel.reduce((acc, val) => acc.concat(val), []);
       const numberOfUnitsOnLevel = unitsOnLevel.length;
       let xIdx = 0;
       currentLevel.forEach((unitLevelGroup, groupIdx) => {
+        let levelGroupRect: RectElementSelection;
+        let levelGroupGElement = levelGElement.append<SVGGElement>("g")
+          .attr("class", "o-level-group");
+        if (this.options.debug) levelGroupRect = createDebugRect(levelGroupGElement);
         unitLevelGroup.forEach((unit) => {
           const x = ((xIdx + 1) * this.width) / (numberOfUnitsOnLevel + 1);
           const y = this.height * ((yIdx + 1) / (numberOfLevels + 1));
           unit.x = x;
           unit.y = y;
-          const { unitGroup, bbUnitNode } = createUnitGroup(svg, unit, this.options);
+          const { unitGroup, bbUnitNode } = createUnitGroup(levelGroupGElement, unit, this.options);
           if (options.onClick) {
             unitGroup.on("click", (e) => {
               // @ts-ignore
@@ -159,6 +176,7 @@ class OrbatChart {
               .classed("o-line", true);
           }
           xIdx += 1;
+          if (this.options.debug) styleDebugRect(levelGroupRect, levelGroupGElement.node()!.getBBox(), "yellow")
         });
         let firstUnitInGroup = unitLevelGroup[0];
         let parentUnit = firstUnitInGroup.parent;
@@ -174,6 +192,7 @@ class OrbatChart {
         svg.append("path")
           .attr("d", d)
           .classed("o-line", true);
+        if (this.options.debug) styleDebugRect(levelRect, levelGElement.node()!.getBBox());
       });
     });
 
@@ -186,7 +205,7 @@ class OrbatChart {
     svg.attr("width", "100%");
     svg.attr("height", "100%");
     if (this.options.debug) {
-      const rect = svg.append("rect")
+      svg.append("rect")
         .attr("fill", "none")
         .attr("stroke", "red")
         .attr("y", "0")
