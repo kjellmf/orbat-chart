@@ -1,11 +1,20 @@
 import { Symbol } from "milsymbol";
-import { select, Selection } from "d3-selection";
+import { select } from "d3-selection";
 import { walkTree } from "./utils";
-import { ChartOrientation, UnitNodeInfo, OrbChartOptions, Point, Size, Unit, BBoxUnitNodeInfo } from "./types";
-
-type SVGElementSelection = Selection<SVGElement, any, any, any>;
-type GElementSelection = Selection<SVGGElement, any, any, any>;
-type RectElementSelection = Selection<SVGRectElement, any, any, any>;
+import {
+  ChartOrientation,
+  GElementSelection,
+  OrbChartOptions,
+  Point,
+  RenderedChart,
+  RenderedLevel,
+  RenderedLevelGroup,
+  RenderedUnitNode,
+  Size,
+  SVGElementSelection,
+  Unit,
+  UnitNodeInfo
+} from "./types";
 
 const CHART_STYLE = `
 .o-line {
@@ -60,35 +69,30 @@ function putGroupAt(g: GElementSelection, node: UnitNodeInfo, x: number, y: numb
   return g.attr("transform", `translate(${dx}, ${dy})`);
 }
 
-function createDebugRect(g: GElementSelection): RectElementSelection {
-  return g.append<SVGRectElement>("rect")
-    .classed("o-rect", true);
-}
-
 function createGroupElement(parentElement, className: string): GElementSelection {
   return parentElement.append("g")
     .attr("class", className);
 }
 
-function styleDebugRect(rectElement: RectElementSelection, bbox: DOMRect, fill = "#ccc") {
-  rectElement
-    .attr("x", bbox.x)
-    .attr("y", bbox.y)
-    .attr("width", bbox.width)
-    .attr("height", bbox.height)
-    .style("fill", fill)
-    .style("fill-opacity", ".4")
-    .style("stroke", "#666")
-    .style("stroke-width", "1.5px");
+function drawDebugRect(groupElement: GElementSelection, fill = "#ccc") {
+  if (groupElement) {
+    const bbox = groupElement.node()!.getBBox();
+    groupElement.append("rect").lower()
+      .classed("dbg-rect", true)
+      .attr("x", bbox.x)
+      .attr("y", bbox.y)
+      .attr("width", bbox.width)
+      .attr("height", bbox.height)
+      .style("fill", fill)
+      .style("fill-opacity", ".4")
+      .style("stroke", "#666")
+      .style("stroke-width", "1.5px");
+  }
+
 }
 
-function createUnitGroup(parentElement: GElementSelection, unitNode: UnitNodeInfo, options: OrbChartOptions) {
-  let rect;
+function createUnitGroup(parentElement: GElementSelection, unitNode: UnitNodeInfo, options: OrbChartOptions): RenderedUnitNode {
   const g = createGroupElement(parentElement, "o-unit");
-  if (options.debug) {
-    // put debug rect here so that it is drawn behind the unit symbol
-    rect = createDebugRect(g);
-  }
   g.append("g")
     .html(unitNode.symb.asSVG());
   g.append("text")
@@ -97,11 +101,6 @@ function createUnitGroup(parentElement: GElementSelection, unitNode: UnitNodeInf
     .attr("y", unitNode.symbolBoxSize.height)
     .attr("class", "o-label")
     .text(unitNode.unit.name);
-  let bbUnitNode = <BBoxUnitNodeInfo>unitNode;
-  bbUnitNode.bbox = g.node()!.getBBox();
-  if (options.debug) {
-    styleDebugRect(rect, bbUnitNode.bbox);
-  }
 
   if (options.onClick) {
     g.on("click", (e) => {
@@ -109,7 +108,21 @@ function createUnitGroup(parentElement: GElementSelection, unitNode: UnitNodeInf
       options.onClick(unitNode);
     });
   }
-  return { unitGroup: g, bbUnitNode };
+
+  if (options.debug) {
+    drawDebugRect(g);
+  }
+
+  let renderedUnitNode = unitNode as RenderedUnitNode;
+  renderedUnitNode.groupElement = g;
+  renderedUnitNode.boundingBox = g.node()!.getBBox();
+
+  return renderedUnitNode;
+}
+
+function flattenArray<T>(array: any[]): T[] {
+  return ([] as T[]).concat(...array);
+  // return array.reduce((acc, val) => acc.concat(val), []);
 }
 
 class OrbatChart {
@@ -136,56 +149,17 @@ class OrbatChart {
     this.width = size.width || DEFAULT_CHART_WIDTH;
     this.height = size.height || DEFAULT_CHART_HEIGHT;
 
-    this._createSvgElement(parentElement);
+    let renderedChart = this._createSvgElement(parentElement);
 
-    let options = this.options;
-    let svg = this.svg;
-    const numberOfLevels = this.groupedLevels.length;
-    this.groupedLevels.forEach((currentLevel, yIdx) => {
-      let levelRect: RectElementSelection;
-      if (options.maxLevels && yIdx >= options.maxLevels) {
-        return;
-      }
-      let levelGElement = createGroupElement(this.svg, "o-level");
-      if (this.options.debug) levelRect = createDebugRect(levelGElement);
+    // Pass 1: Create g elements and other svg elements
+    // Pass 2: Do layout and draw connectors
+    renderedChart.levels = this._createInitialNodeStructure(this.svg, this.groupedLevels, this.options);
+    this._doNodeLayout(renderedChart, this.options);
 
-      const unitsOnLevel = currentLevel.reduce((acc, val) => acc.concat(val), []);
-      const numberOfUnitsOnLevel = unitsOnLevel.length;
-
-      let xIdx = 0;
-      currentLevel.forEach((unitLevelGroup, groupIdx) => {
-        let levelGroupRect: RectElementSelection;
-        let levelGroupGElement = createGroupElement(levelGElement, "o-level-group");
-        if (this.options.debug) levelGroupRect = createDebugRect(levelGroupGElement);
-
-        unitLevelGroup.forEach((unitNode) => {
-          const { unitGroup, bbUnitNode } = createUnitGroup(levelGroupGElement, unitNode, this.options);
-          const x = ((xIdx + 1) * this.width) / (numberOfUnitsOnLevel + 1);
-          const y = this.height * ((yIdx + 1) / (numberOfLevels + 1));
-          unitNode.x = x;
-          unitNode.y = y;
-          unitNode.ly = y + (bbUnitNode.bbox.height - unitNode.octagonAnchor.y);
-
-          if (this.options.orientation === ChartOrientation.Bottom) {
-            putGroupAt(unitGroup, unitNode, x, this.height - y);
-          } else {
-            putGroupAt(unitGroup, unitNode, x, y);
-          }
-
-          this._drawUnitLevelGroupConnectorPath(unitNode);
-          if (this.options.debug) styleDebugRect(levelGroupRect, levelGroupGElement.node()!.getBBox(), "yellow");
-          xIdx += 1;
-        });
-
-        this._drawUnitLevelConnectorPath(unitLevelGroup);
-        if (this.options.debug) styleDebugRect(levelRect, levelGElement.node()!.getBBox());
-      });
-    });
-
-    return svg.node() as Element;
+    return this.svg.node() as Element;
   }
 
-  private _createSvgElement(parentElement: HTMLElement) {
+  private _createSvgElement(parentElement: HTMLElement): RenderedChart {
     parentElement.innerHTML = "";
     const svg = select(parentElement).append<SVGElement>("svg");
     svg.attr("viewBox", `0 0 ${this.width} ${this.height}`);
@@ -193,7 +167,7 @@ class OrbatChart {
     svg.attr("width", "100%");
     svg.attr("height", "100%");
     if (this.options.debug) {
-      svg.append("rect")
+      svg.append<SVGRectElement>("rect")
         .attr("fill", "none")
         .attr("stroke", "red")
         .attr("y", "0")
@@ -202,6 +176,7 @@ class OrbatChart {
         .attr("height", this.height);
     }
     this.svg = svg;
+    return { groupElement: <unknown>svg as GElementSelection, levels: [] }
   }
 
   private _computeOrbatInfo(rootNode: Unit) {
@@ -242,6 +217,69 @@ class OrbatChart {
     }
   }
 
+  private _createInitialNodeStructure(parentElement: SVGElementSelection, groupedLevels: UnitNodeInfo[][][], options: OrbChartOptions): RenderedLevel[] {
+    let renderedLevels: RenderedLevel[] = [];
+    groupedLevels.forEach((currentLevel, yIdx) => {
+      if (options.maxLevels && yIdx >= options.maxLevels) {
+        return;
+      }
+      let levelGElement = createGroupElement(parentElement, "o-level");
+      let renderedLevel: RenderedLevel = {
+        groupElement: levelGElement, unitGroups: []
+      };
+      renderedLevels.push(renderedLevel);
+
+      currentLevel.forEach((unitLevelGroup, groupIdx) => {
+        let levelGroupGElement = createGroupElement(levelGElement, "o-level-group");
+        const units = unitLevelGroup.map(unitNode => createUnitGroup(levelGroupGElement, unitNode, options));
+        const renderedLevelGroup: RenderedLevelGroup = {
+          groupElement: levelGroupGElement,
+          units
+        };
+        renderedLevel.unitGroups.push(renderedLevelGroup);
+      });
+    });
+    return renderedLevels;
+  }
+
+  private _doNodeLayout(renderedChart: RenderedChart, options: OrbChartOptions) {
+    const numberOfLevels = this.groupedLevels.length;
+    renderedChart.levels.forEach((renderedLevel, yIdx) => {
+      if (options.maxLevels && yIdx >= options.maxLevels) {
+        return;
+      }
+      const renderGroups = renderedLevel.unitGroups;
+      const unitsOnLevel = flattenArray<RenderedUnitNode>(renderGroups.map(unitGroup => unitGroup.units));
+
+      const numberOfUnitsOnLevel = unitsOnLevel.length;
+
+      let xIdx = 0;
+      renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
+        let levelGroupGElement = unitLevelGroup.groupElement;
+
+        unitLevelGroup.units.forEach((unitNode) => {
+          const x = ((xIdx + 1) * this.width) / (numberOfUnitsOnLevel + 1);
+          const y = this.height * ((yIdx + 1) / (numberOfLevels + 1));
+          unitNode.x = x;
+          unitNode.y = y;
+          unitNode.ly = y + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
+
+          if (options.orientation === ChartOrientation.Bottom) {
+            putGroupAt(unitNode.groupElement, unitNode, x, this.height - y);
+          } else {
+            putGroupAt(unitNode.groupElement, unitNode, x, y);
+          }
+
+          this._drawUnitLevelGroupConnectorPath(unitNode);
+          xIdx += 1;
+        });
+        if (options.debug) drawDebugRect(levelGroupGElement, "yellow");
+        this._drawUnitLevelConnectorPath(unitLevelGroup.units);
+      });
+      if (options.debug) drawDebugRect(renderedLevel.groupElement);
+    });
+  }
+
   private _drawUnitLevelGroupConnectorPath(unit: UnitNodeInfo) {
     const { x, y } = unit;
     if (unit.parent) {
@@ -253,7 +291,7 @@ class OrbatChart {
     }
   }
 
-  private _drawUnitLevelConnectorPath(unitLevelGroup: UnitNodeInfo[]) {
+  private _drawUnitLevelConnectorPath(unitLevelGroup: RenderedUnitNode[]) {
     let firstUnitInGroup = unitLevelGroup[0];
     let svg = this.svg;
     let parentUnit = firstUnitInGroup.parent;

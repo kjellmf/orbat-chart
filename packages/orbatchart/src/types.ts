@@ -1,4 +1,9 @@
 import { Symbol, SymbolOptions } from "milsymbol";
+import { Selection } from "d3-selection";
+
+export type SVGElementSelection = Selection<SVGElement, any, any, any>;
+export type GElementSelection = Selection<SVGGElement, any, any, any>;
+export type RectElementSelection = Selection<SVGRectElement, any, any, any>;
 
 export enum ChartOrientation {
   Top = "TOP",
@@ -29,10 +34,6 @@ export interface UnitNodeInfo {
   ly: number;
 }
 
-export interface BBoxUnitNodeInfo extends UnitNodeInfo {
-  bbox: DOMRect;
-}
-
 export type OnClickCallback = (unit: Unit) => void;
 export type SymbolGenerator = (sidc: string, options: SymbolOptions) => Symbol;
 
@@ -55,3 +56,25 @@ export interface Unit {
   subUnits?: Unit[];
   id: string;
 }
+
+export interface RenderedGG {
+  groupElement: GElementSelection;
+}
+
+export interface RenderedChart extends RenderedGG {
+  levels: RenderedLevel[];
+}
+
+export interface RenderedLevel extends RenderedGG {
+  unitGroups: RenderedLevelGroup[]
+}
+
+export interface RenderedLevelGroup extends RenderedGG {
+  units: RenderedUnitNode[]
+}
+
+export interface RenderedUnitNode extends RenderedGG, UnitNodeInfo {
+  boundingBox: DOMRect;
+  parent?: RenderedUnitNode;
+}
+
