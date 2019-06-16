@@ -152,9 +152,11 @@ class OrbatChart {
     let renderedChart = this._createSvgElement(parentElement);
 
     // Pass 1: Create g elements and other svg elements
-    // Pass 2: Do layout and draw connectors
+    // Pass 2: Do unit layout
+    // Pass 3: Draw connectors
     renderedChart.levels = this._createInitialNodeStructure(this.svg, this.groupedLevels, this.options);
     this._doNodeLayout(renderedChart, this.options);
+    this._drawConnectors(renderedChart, this.options);
 
     return this.svg.node() as Element;
   }
@@ -232,11 +234,7 @@ class OrbatChart {
       currentLevel.forEach((unitLevelGroup, groupIdx) => {
         let levelGroupGElement = createGroupElement(levelGElement, "o-level-group");
         const units = unitLevelGroup.map(unitNode => createUnitGroup(levelGroupGElement, unitNode, options));
-        const renderedLevelGroup: RenderedLevelGroup = {
-          groupElement: levelGroupGElement,
-          units
-        };
-        renderedLevel.unitGroups.push(renderedLevelGroup);
+        renderedLevel.unitGroups.push({ groupElement: levelGroupGElement, units });
       });
     });
     return renderedLevels;
@@ -245,9 +243,6 @@ class OrbatChart {
   private _doNodeLayout(renderedChart: RenderedChart, options: OrbChartOptions) {
     const numberOfLevels = this.groupedLevels.length;
     renderedChart.levels.forEach((renderedLevel, yIdx) => {
-      if (options.maxLevels && yIdx >= options.maxLevels) {
-        return;
-      }
       const renderGroups = renderedLevel.unitGroups;
       const unitsOnLevel = flattenArray<RenderedUnitNode>(renderGroups.map(unitGroup => unitGroup.units));
 
@@ -257,7 +252,7 @@ class OrbatChart {
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
         let levelGroupGElement = unitLevelGroup.groupElement;
 
-        unitLevelGroup.units.forEach((unitNode) => {
+        for (const unitNode of unitLevelGroup.units) {
           const x = ((xIdx + 1) * this.width) / (numberOfUnitsOnLevel + 1);
           const y = this.height * ((yIdx + 1) / (numberOfLevels + 1));
           unitNode.x = x;
@@ -269,14 +264,22 @@ class OrbatChart {
           } else {
             putGroupAt(unitNode.groupElement, unitNode, x, y);
           }
-
-          this._drawUnitLevelGroupConnectorPath(unitNode);
           xIdx += 1;
-        });
+        }
         if (options.debug) drawDebugRect(levelGroupGElement, "yellow");
-        this._drawUnitLevelConnectorPath(unitLevelGroup.units);
       });
       if (options.debug) drawDebugRect(renderedLevel.groupElement);
+    });
+  }
+
+  private _drawConnectors(renderedChart: RenderedChart, options: OrbChartOptions) {
+    renderedChart.levels.forEach((renderedLevel, yIdx) => {
+      renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
+        unitLevelGroup.units.forEach(unitNode => {
+          this._drawUnitLevelGroupConnectorPath(unitNode);
+        });
+        this._drawUnitLevelConnectorPath(unitLevelGroup.units);
+      });
     });
   }
 
