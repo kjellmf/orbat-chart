@@ -12,6 +12,11 @@ export enum ChartOrientation {
   // Right = "RIGHT"
 }
 
+export enum UnitLevelDistance {
+  Fixed = "FIXED",
+  EqualPadding = "EQUAL_PADDING"
+}
+
 export interface Size {
   width: number;
   height: number
@@ -45,6 +50,7 @@ export interface OrbChartOptions {
   connectorOffset: number;
   symbolGenerator: SymbolGenerator;
   orientation: ChartOrientation;
+  unitLevelDistance: UnitLevelDistance;
 }
 
 export type UnitNodeVisitorCallback = (unit: Unit, level: number, parent: Unit | null) => void

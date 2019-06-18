@@ -8,11 +8,11 @@ import {
   Point,
   RenderedChart,
   RenderedLevel,
-  RenderedLevelGroup,
   RenderedUnitNode,
   Size,
   SVGElementSelection,
   Unit,
+  UnitLevelDistance,
   UnitNodeInfo
 } from "./types";
 
@@ -38,6 +38,7 @@ export const DEFAULT_OPTIONS = {
   debug: false,
   connectorOffset: 5,
   orientation: ChartOrientation.Top,
+  unitLevelDistance: UnitLevelDistance.Fixed,
 } as OrbChartOptions;
 
 export const DEFAULT_CHART_WIDTH = 600;
@@ -261,18 +262,24 @@ class OrbatChart {
       const totalWidth = arrSum(unitsOnLevel.map(u => u.boundingBox.width));
       const availableSpace = chartWidth - totalWidth;
       const padding = availableSpace / numberOfUnitsOnLevel;
-      // console.log(yIdx, totalWidth, availableSpace, padding, numberOfUnitsOnLevel);
 
       let xIdx = 0;
+      let prevX = -padding / 2;
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
         let levelGroupGElement = unitLevelGroup.groupElement;
 
         for (const unitNode of unitLevelGroup.units) {
-          const x = ((xIdx + 1) * chartWidth) / (numberOfUnitsOnLevel + 1);
+          let x;
+          if (options.unitLevelDistance == UnitLevelDistance.EqualPadding) {
+            x = prevX + unitNode.boundingBox.width / 2 + padding;
+          } else {
+            x = ((xIdx + 1) * chartWidth) / (numberOfUnitsOnLevel + 1);
+          }
           const y = chartHeight * ((yIdx + 1) / (numberOfLevels + 1));
           unitNode.x = x;
           unitNode.y = y;
           unitNode.ly = y + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
+          prevX = unitNode.x + unitNode.boundingBox.width / 2;
 
           if (options.orientation === ChartOrientation.Bottom) {
             putGroupAt(unitNode.groupElement, unitNode, x, chartHeight - y, options.debug);

@@ -16,6 +16,11 @@
       v-model.number="settings.connectorOffset"
     />
     <v-select
+      label="Unit spacing"
+      :items="unitLevelDistance"
+      v-model="settings.unitLevelDistance"
+    />
+    <v-select
       disabled
       label="Chart orientation"
       :items="orientation"
@@ -29,7 +34,7 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { ChartOrientation } from "orbatchart";
+import { ChartOrientation, UnitLevelDistance } from "orbatchart";
 import { PanelMixins } from "@/components/mixins";
 
 function getMap(myEnum) {
@@ -44,6 +49,10 @@ export default Vue.extend({
   computed: {
     orientation() {
       return getMap(ChartOrientation);
+    },
+
+    unitLevelDistance() {
+      return getMap(UnitLevelDistance);
     }
   }
 });
