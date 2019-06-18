@@ -43,6 +43,10 @@ export const DEFAULT_OPTIONS = {
 export const DEFAULT_CHART_WIDTH = 600;
 export const DEFAULT_CHART_HEIGHT = 600;
 
+function arrSum(array: number[]): number {
+  return array.reduce((a, b) => a + b, 0);
+}
+
 function createUnitNodeInfo(unit: Unit, options: Partial<OrbChartOptions>): UnitNodeInfo {
   let symb: Symbol;
   const symbolOptions = { size: options.symbolSize };
@@ -63,7 +67,7 @@ function createUnitNodeInfo(unit: Unit, options: Partial<OrbChartOptions>): Unit
   };
 }
 
-function putGroupAt(g: GElementSelection, node: UnitNodeInfo, x: number, y: number) {
+function putGroupAt(g: GElementSelection, node: UnitNodeInfo, x: number, y: number, debug = false) {
   const dx = x - node.octagonAnchor.x;
   const dy = y - node.octagonAnchor.y;
   return g.attr("transform", `translate(${dx}, ${dy})`);
@@ -88,7 +92,14 @@ function drawDebugRect(groupElement: GElementSelection, fill = "#ccc") {
       .style("stroke", "#666")
       .style("stroke-width", "1.5px");
   }
+}
 
+function drawDebugPoint(parentElement, x: number, y: number, fillColor = "red") {
+  parentElement.append("circle")
+    .attr("cx", x)
+    .attr("cy", y)
+    .attr("r", 4)
+    .attr("fill", fillColor);
 }
 
 function createUnitGroup(parentElement: GElementSelection, unitNode: UnitNodeInfo, options: OrbChartOptions): RenderedUnitNode {
@@ -148,6 +159,7 @@ class OrbatChart {
   toSVG(size: Partial<Size>, parentElement: HTMLElement): Element {
     this.width = size.width || DEFAULT_CHART_WIDTH;
     this.height = size.height || DEFAULT_CHART_HEIGHT;
+    const nsize = { width: this.width, height: this.height };
 
     let renderedChart = this._createSvgElement(parentElement);
 
@@ -155,7 +167,7 @@ class OrbatChart {
     // Pass 2: Do unit layout
     // Pass 3: Draw connectors
     renderedChart.levels = this._createInitialNodeStructure(this.svg, this.groupedLevels, this.options);
-    this._doNodeLayout(renderedChart, this.options);
+    this._doNodeLayout(renderedChart, nsize, this.options);
     this._drawConnectors(renderedChart, this.options);
 
     return this.svg.node() as Element;
@@ -221,10 +233,9 @@ class OrbatChart {
 
   private _createInitialNodeStructure(parentElement: SVGElementSelection, groupedLevels: UnitNodeInfo[][][], options: OrbChartOptions): RenderedLevel[] {
     let renderedLevels: RenderedLevel[] = [];
-    groupedLevels.forEach((currentLevel, yIdx) => {
-      if (options.maxLevels && yIdx >= options.maxLevels) {
-        return;
-      }
+    for (const [yIdx, currentLevel] of groupedLevels.entries()) {
+      if (options.maxLevels && yIdx >= options.maxLevels) break;
+
       let levelGElement = createGroupElement(parentElement, "o-level");
       let renderedLevel: RenderedLevel = {
         groupElement: levelGElement, unitGroups: []
@@ -236,33 +247,41 @@ class OrbatChart {
         const units = unitLevelGroup.map(unitNode => createUnitGroup(levelGroupGElement, unitNode, options));
         renderedLevel.unitGroups.push({ groupElement: levelGroupGElement, units });
       });
-    });
+    }
     return renderedLevels;
   }
 
-  private _doNodeLayout(renderedChart: RenderedChart, options: OrbChartOptions) {
+  private _doNodeLayout(renderedChart: RenderedChart, chartSize: Size, options: OrbChartOptions) {
     const numberOfLevels = this.groupedLevels.length;
+    const { width: chartWidth, height: chartHeight } = chartSize;
     renderedChart.levels.forEach((renderedLevel, yIdx) => {
       const renderGroups = renderedLevel.unitGroups;
       const unitsOnLevel = flattenArray<RenderedUnitNode>(renderGroups.map(unitGroup => unitGroup.units));
-
       const numberOfUnitsOnLevel = unitsOnLevel.length;
+      const totalWidth = arrSum(unitsOnLevel.map(u => u.boundingBox.width));
+      const availableSpace = chartWidth - totalWidth;
+      const padding = availableSpace / numberOfUnitsOnLevel;
+      // console.log(yIdx, totalWidth, availableSpace, padding, numberOfUnitsOnLevel);
 
       let xIdx = 0;
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
         let levelGroupGElement = unitLevelGroup.groupElement;
 
         for (const unitNode of unitLevelGroup.units) {
-          const x = ((xIdx + 1) * this.width) / (numberOfUnitsOnLevel + 1);
-          const y = this.height * ((yIdx + 1) / (numberOfLevels + 1));
+          const x = ((xIdx + 1) * chartWidth) / (numberOfUnitsOnLevel + 1);
+          const y = chartHeight * ((yIdx + 1) / (numberOfLevels + 1));
           unitNode.x = x;
           unitNode.y = y;
           unitNode.ly = y + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
 
           if (options.orientation === ChartOrientation.Bottom) {
-            putGroupAt(unitNode.groupElement, unitNode, x, this.height - y);
+            putGroupAt(unitNode.groupElement, unitNode, x, chartHeight - y, options.debug);
           } else {
-            putGroupAt(unitNode.groupElement, unitNode, x, y);
+            putGroupAt(unitNode.groupElement, unitNode, x, y, options.debug);
+            if (options.debug) {
+              drawDebugPoint(this.svg, x, y);
+              drawDebugPoint(this.svg, x, unitNode.ly);
+            }
           }
           xIdx += 1;
         }
