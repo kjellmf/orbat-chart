@@ -1,18 +1,20 @@
 <template>
   <v-app id="app">
     <v-navigation-drawer
+      width="400"
       v-model="drawer"
       temporary
       app
       class="mdrawer">
-      <v-list dense>
-        <v-toolbar
-          prominent
-          flat
-          class="transparent">
-          <v-toolbar-title>ORBAT Chart Builder</v-toolbar-title>
-        </v-toolbar>
-      </v-list>
+
+      <v-container>
+        <h6 class="title">ORBAT Chart Builder
+          <v-chip color="warning">alpha</v-chip>
+        </h6>
+
+        <p class="subheading">Work in progress ...</p>
+      </v-container>
+
     </v-navigation-drawer>
 
     <v-content>
@@ -48,25 +50,25 @@
 
 <script lang="ts">
 
-import { PanelMixins } from "./components/mixins";
-import Vue from 'vue';
-import { Unit } from "orbatchart";
+  import { PanelMixins } from "./components/mixins";
+  import Vue from 'vue';
+  import { Unit } from "orbatchart";
 
 
-import testOrbat from "./testorbat.json";
+  import testOrbat from "./testorbat.json";
 
-const ORBAT1: Unit = testOrbat;
+  const ORBAT1: Unit = testOrbat;
 
-export default Vue.extend({
-  mixins: [PanelMixins],
-  components: {},
-  data: () => ({
-    drawer: null,
-  }),
-  created() {
-    this.$store.commit("setOrbat", [ORBAT1] );
-  }
-});
+  export default Vue.extend({
+    mixins: [PanelMixins],
+    components: {},
+    data: () => ({
+      drawer: null,
+    }),
+    created() {
+      this.$store.commit("setOrbat", [ORBAT1]);
+    }
+  });
 </script>
 <style>
 </style>
