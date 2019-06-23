@@ -155,16 +155,14 @@ class OrbatChart {
   toSVG(size: Partial<Size>, parentElement: HTMLElement): Element {
     this.width = size.width || DEFAULT_CHART_WIDTH;
     this.height = size.height || DEFAULT_CHART_HEIGHT;
-    const nsize = { width: this.width, height: this.height };
-
     let renderedChart = this._createSvgElement(parentElement);
 
     // Pass 1: Create g elements and other svg elements
     // Pass 2: Do unit layout
     // Pass 3: Draw connectors
-    renderedChart.levels = this._createInitialNodeStructure(this.svg, this.groupedLevels, this.options);
-    this._doNodeLayout(renderedChart, nsize, this.options);
-    this._drawConnectors(renderedChart, this.options);
+    renderedChart.levels = this._createInitialNodeStructure(this.svg, this.groupedLevels);
+    this._doNodeLayout(renderedChart);
+    this._drawConnectors(renderedChart);
 
     return this.svg.node() as Element;
   }
@@ -227,7 +225,8 @@ class OrbatChart {
     }
   }
 
-  private _createInitialNodeStructure(parentElement: SVGElementSelection, groupedLevels: UnitNodeInfo[][][], options: OrbChartOptions): RenderedLevel[] {
+  private _createInitialNodeStructure(parentElement: SVGElementSelection, groupedLevels: UnitNodeInfo[][][]): RenderedLevel[] {
+    const options = this.options;
     let renderedLevels: RenderedLevel[] = [];
     for (const [yIdx, currentLevel] of groupedLevels.entries()) {
       if (options.maxLevels && yIdx >= options.maxLevels) break;
@@ -247,53 +246,60 @@ class OrbatChart {
     return renderedLevels;
   }
 
-  private _doNodeLayout(renderedChart: RenderedChart, chartSize: Size, options: OrbChartOptions) {
+  private _doNodeLayout(renderedChart: RenderedChart) {
     const numberOfLevels = this.groupedLevels.length;
-    const { width: chartWidth, height: chartHeight } = chartSize;
+    const chartHeight = this.height;
     renderedChart.levels.forEach((renderedLevel, yIdx) => {
-      const renderGroups = renderedLevel.unitGroups;
-      const unitsOnLevel = flattenArray<RenderedUnitNode>(renderGroups.map(unitGroup => unitGroup.units));
-      const numberOfUnitsOnLevel = unitsOnLevel.length;
-      const totalWidth = arrSum(unitsOnLevel.map(u => u.boundingBox.width));
-      const availableSpace = chartWidth - totalWidth;
-      const padding = availableSpace / numberOfUnitsOnLevel;
-
-      let xIdx = 0;
-      let prevX = -padding / 2;
-      renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
-        let levelGroupGElement = unitLevelGroup.groupElement;
-
-        for (const unitNode of unitLevelGroup.units) {
-          let x;
-          if (options.unitLevelDistance == UnitLevelDistance.EqualPadding) {
-            x = prevX + unitNode.boundingBox.width / 2 + padding;
-          } else {
-            x = ((xIdx + 1) * chartWidth) / (numberOfUnitsOnLevel + 1);
-          }
-          const y = chartHeight * ((yIdx + 1) / (numberOfLevels + 1));
-          unitNode.x = x;
-          unitNode.y = y;
-          unitNode.ly = y + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
-          prevX = unitNode.x + unitNode.boundingBox.width / 2;
-
-          if (options.orientation === ChartOrientation.Bottom) {
-            putGroupAt(unitNode.groupElement, unitNode, x, chartHeight - y, options.debug);
-          } else {
-            putGroupAt(unitNode.groupElement, unitNode, x, y, options.debug);
-            if (options.debug) {
-              drawDebugPoint(this.svg, x, y);
-              drawDebugPoint(this.svg, x, unitNode.ly);
-            }
-          }
-          xIdx += 1;
-        }
-        if (options.debug) drawDebugRect(levelGroupGElement, "yellow");
-      });
-      if (options.debug) drawDebugRect(renderedLevel.groupElement);
+      // if (options.orientation === ChartOrientation.Bottom)
+      const y = chartHeight * ((yIdx + 1) / (numberOfLevels + 1));
+      this._renderLevel(renderedLevel, y)
     });
   }
 
-  private _drawConnectors(renderedChart: RenderedChart, options: OrbChartOptions) {
+  private _renderLevel(renderedLevel: RenderedLevel, y: number) {
+    const options = this.options;
+    const chartWidth = this.width;
+    const renderGroups = renderedLevel.unitGroups;
+    const unitsOnLevel = flattenArray<RenderedUnitNode>(renderGroups.map(unitGroup => unitGroup.units));
+    const numberOfUnitsOnLevel = unitsOnLevel.length;
+    const totalWidth = arrSum(unitsOnLevel.map(u => u.boundingBox.width));
+
+    const availableSpace = chartWidth - totalWidth;
+    const padding = availableSpace / numberOfUnitsOnLevel;
+
+    let xIdx = 0;
+    let prevX = -padding / 2;
+
+    renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
+      let levelGroupGElement = unitLevelGroup.groupElement;
+
+      for (const unitNode of unitLevelGroup.units) {
+        let x;
+        if (options.unitLevelDistance == UnitLevelDistance.EqualPadding) {
+          x = prevX + unitNode.boundingBox.width / 2 + padding;
+        } else {
+          x = ((xIdx + 1) * chartWidth) / (numberOfUnitsOnLevel + 1);
+        }
+
+        unitNode.x = x;
+        unitNode.y = y;
+        unitNode.ly = y + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
+        prevX = unitNode.x + unitNode.boundingBox.width / 2;
+
+        putGroupAt(unitNode.groupElement, unitNode, x, y, options.debug);
+        if (options.debug) {
+          drawDebugPoint(this.svg, x, y);
+          drawDebugPoint(this.svg, x, unitNode.ly);
+        }
+
+        xIdx += 1;
+      }
+      if (options.debug) drawDebugRect(levelGroupGElement, "yellow");
+    });
+    if (options.debug) drawDebugRect(renderedLevel.groupElement);
+  }
+
+  private _drawConnectors(renderedChart: RenderedChart) {
     renderedChart.levels.forEach((renderedLevel, yIdx) => {
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
         unitLevelGroup.units.forEach(unitNode => {
