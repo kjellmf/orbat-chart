@@ -1,6 +1,6 @@
 import { Symbol } from "milsymbol";
 import { select } from "d3-selection";
-import { walkTree } from "./utils";
+import { flattenArray, walkTree } from "./utils";
 import {
   ChartOrientation,
   GElementSelection,
@@ -130,11 +130,6 @@ function createUnitGroup(parentElement: GElementSelection, unitNode: UnitNodeInf
   renderedUnitNode.boundingBox = g.node()!.getBBox();
 
   return renderedUnitNode;
-}
-
-function flattenArray<T>(array: any[]): T[] {
-  return ([] as T[]).concat(...array);
-  // return array.reduce((acc, val) => acc.concat(val), []);
 }
 
 class OrbatChart {

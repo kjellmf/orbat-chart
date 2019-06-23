@@ -63,24 +63,23 @@ export interface Unit {
   id: string;
 }
 
-export interface RenderedGG {
+export interface RenderedElement {
   groupElement: GElementSelection;
 }
 
-export interface RenderedChart extends RenderedGG {
+export interface RenderedChart extends RenderedElement {
   levels: RenderedLevel[];
 }
 
-export interface RenderedLevel extends RenderedGG {
+export interface RenderedLevel extends RenderedElement {
   unitGroups: RenderedLevelGroup[]
 }
 
-export interface RenderedLevelGroup extends RenderedGG {
+export interface RenderedLevelGroup extends RenderedElement {
   units: RenderedUnitNode[]
 }
 
-export interface RenderedUnitNode extends RenderedGG, UnitNodeInfo {
+export interface RenderedUnitNode extends RenderedElement, UnitNodeInfo {
   boundingBox: DOMRect;
   parent?: RenderedUnitNode;
 }
-

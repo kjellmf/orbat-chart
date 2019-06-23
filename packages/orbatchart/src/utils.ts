@@ -20,3 +20,8 @@ export function walkTree(root: Unit, callback: UnitNodeVisitorCallback) {
 export function createElement(elementName) {
   return document.createElementNS('http://www.w3.org/2000/svg', elementName);
 }
+
+export function flattenArray<T>(array: any[]): T[] {
+  return ([] as T[]).concat(...array);
+  // return array.reduce((acc, val) => acc.concat(val), []);
+}
