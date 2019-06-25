@@ -45,6 +45,8 @@ export const DEFAULT_OPTIONS = {
 
 export const DEFAULT_CHART_WIDTH = 600;
 export const DEFAULT_CHART_HEIGHT = 600;
+export const TREE_LEFT_RIGHT_OFFSET = 40;
+export const STACKED_OFFSET = 50;
 
 function createUnitNodeInfo(unit: Unit, options: Partial<OrbChartOptions>): UnitNodeInfo {
   let symb: Symbol;
@@ -128,6 +130,10 @@ function createUnitGroup(parentElement: GElementSelection, unitNode: UnitNodeInf
   renderedUnitNode.boundingBox = g.node()!.getBBox();
 
   return renderedUnitNode;
+}
+
+function isStackedLayout(layout: LevelLayout) {
+  return layout === LevelLayout.Stacked || layout === LevelLayout.TreeRight || layout === LevelLayout.TreeLeft;
 }
 
 class OrbatChart {
@@ -274,7 +280,9 @@ class OrbatChart {
         _doHorizontalLayout();
         break;
       case LevelLayout.Stacked:
-        _doStackedLayout();
+      case LevelLayout.TreeRight:
+      case LevelLayout.TreeLeft:
+        _doStackedLayout(levelLayout);
         break;
       default:
         console.warn("Unhandled layout", levelLayout);
@@ -312,19 +320,26 @@ class OrbatChart {
       });
     }
 
-    function _doStackedLayout() {
+    function _doStackedLayout(layout: LevelLayout) {
       const groupsOnLevel = renderedLevel.unitGroups.length;
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
         let prevY = y;
         for (const [yIdx, unitNode] of unitLevelGroup.units.entries()) {
+          let x = unitNode.parent ? unitNode.parent.x : ((groupIdx + 1) * chartWidth) / (groupsOnLevel + 1);
 
-          const x = unitNode.parent ? unitNode.parent.x : ((groupIdx + 1) * chartWidth) / (groupsOnLevel + 1);
+
+          if (layout === LevelLayout.TreeRight) {
+            x += TREE_LEFT_RIGHT_OFFSET;
+          } else if (layout === LevelLayout.TreeLeft) {
+            x -= TREE_LEFT_RIGHT_OFFSET;
+          }
           const ny = prevY;
 
           unitNode.x = x;
           unitNode.y = ny;
           unitNode.ly = ny + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
-          prevY = unitNode.ly + 50;
+
+          prevY = unitNode.ly + STACKED_OFFSET;
 
           putGroupAt(unitNode.groupElement, unitNode, x, ny, options.debug);
           if (options.debug) {
@@ -343,7 +358,8 @@ class OrbatChart {
     renderedChart.levels.forEach((renderedLevel, yIdx) => {
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
         unitLevelGroup.units.forEach((unitNode, idx) => {
-          if (this.options.lastLevelLayout === LevelLayout.Stacked && yIdx === nLevels - 1 && idx > 0) return;
+          if (isStackedLayout(this.options.lastLevelLayout)
+            && yIdx === nLevels - 1 && idx > 0) return;
           this._drawUnitLevelGroupConnectorPath(unitNode);
         });
         this._drawUnitLevelConnectorPath(unitLevelGroup.units);

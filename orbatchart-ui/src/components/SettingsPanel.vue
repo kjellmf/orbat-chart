@@ -20,16 +20,18 @@
       :items="unitLevelDistance"
       v-model="settings.unitLevelDistance"
     />
-    <v-select
+    <!--<v-select
       disabled
       label="Chart orientation"
       :items="orientation"
       v-model="settings.orientation"
+    />-->
+    <v-select
+      label="Last level layout"
+      :items="lastLevelLayout"
+      v-model="settings.lastLevelLayout"
     />
-    <v-checkbox
-      label="Stack last level"
-      v-model="settings.stackLastLevel"
-    />
+
     <v-checkbox
       label="Debug mode"
       v-model="settings.debug"
@@ -38,7 +40,7 @@
 </template>
 <script lang="ts">
 import Vue from "vue";
-import { ChartOrientation, UnitLevelDistance } from "orbatchart";
+import { ChartOrientation, LevelLayout, UnitLevelDistance } from "orbatchart";
 import { PanelMixins } from "@/components/mixins";
 
 function getMap(myEnum) {
@@ -57,6 +59,10 @@ export default Vue.extend({
 
     unitLevelDistance() {
       return getMap(UnitLevelDistance);
+    },
+
+    lastLevelLayout() {
+      return getMap(LevelLayout);
     }
   }
 });
