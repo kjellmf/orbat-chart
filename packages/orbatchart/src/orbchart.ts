@@ -328,7 +328,7 @@ class OrbatChart {
 
           putGroupAt(unitNode.groupElement, unitNode, x, ny, options.debug);
           if (options.debug) {
-            drawDebugPoint(svg, x, y);
+            drawDebugPoint(svg, x, ny);
             drawDebugPoint(svg, x, unitNode.ly);
           }
 
