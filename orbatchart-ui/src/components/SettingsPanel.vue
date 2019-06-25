@@ -27,6 +27,10 @@
       v-model="settings.orientation"
     />
     <v-checkbox
+      label="Stack last level"
+      v-model="settings.stackLastLevel"
+    />
+    <v-checkbox
       label="Debug mode"
       v-model="settings.debug"
     />

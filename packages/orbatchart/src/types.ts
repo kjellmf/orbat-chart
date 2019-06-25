@@ -62,6 +62,7 @@ export interface OrbChartOptions {
   symbolGenerator: SymbolGenerator;
   orientation: ChartOrientation;
   unitLevelDistance: UnitLevelDistance;
+  lastLevelLayout: LevelLayout;
 }
 
 export type UnitNodeVisitorCallback = (unit: Unit, level: number, parent: Unit | null) => void

@@ -3,6 +3,7 @@
 import Vue from "vue";
 import OrbatChart from "orbatchart";
 import {DEFAULT_OPTIONS} from "orbatchart";
+import { LevelLayout } from "../../../packages/orbatchart/src";
 
 export default Vue.extend({
   name: "OrbatChart",
@@ -14,6 +15,7 @@ export default Vue.extend({
     connectorOffset: {type: Number, default: DEFAULT_OPTIONS.connectorOffset},
     orientation: {type: String, default: DEFAULT_OPTIONS.orientation},
     unitLevelDistance: {type: String, default: DEFAULT_OPTIONS.unitLevelDistance},
+    stackLastLevel: {type: Boolean, default: false},
   },
 
   data: () => ({
@@ -63,6 +65,7 @@ export default Vue.extend({
       connectorOffset: this.connectorOffset,
       orientation: this.orientation,
       unitLevelDistance: this.unitLevelDistance,
+      lastLevelLayout: this.stackLastLevel? LevelLayout.Stacked : undefined,
     });
     this.orbchart = orbchart;
     if (this.isMounted) {

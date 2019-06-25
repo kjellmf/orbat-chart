@@ -40,6 +40,7 @@ export const DEFAULT_OPTIONS = {
   connectorOffset: 5,
   orientation: ChartOrientation.Top,
   unitLevelDistance: UnitLevelDistance.Fixed,
+  lastLevelLayout: LevelLayout.Horizontal,
 } as OrbChartOptions;
 
 export const DEFAULT_CHART_WIDTH = 600;
@@ -251,7 +252,7 @@ class OrbatChart {
       // if (options.orientation === ChartOrientation.Bottom)
       const y = chartHeight * ((yIdx + 1) / (numberOfLevels + 1));
       let levelLayout = LevelLayout.Horizontal;
-      if (yIdx === maxLevels - 1) levelLayout = LevelLayout.Stacked;
+      if (yIdx === maxLevels - 1) levelLayout = this.options.lastLevelLayout;
       this._renderLevel(renderedLevel, y, levelLayout);
     });
   }
@@ -313,8 +314,6 @@ class OrbatChart {
 
     function _doStackedLayout() {
       const groupsOnLevel = renderedLevel.unitGroups.length;
-
-
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
         let prevY = y;
         for (const [yIdx, unitNode] of unitLevelGroup.units.entries()) {
@@ -325,7 +324,7 @@ class OrbatChart {
           unitNode.x = x;
           unitNode.y = ny;
           unitNode.ly = ny + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
-          prevY = unitNode.ly+ 50;
+          prevY = unitNode.ly + 50;
 
           putGroupAt(unitNode.groupElement, unitNode, x, ny, options.debug);
           if (options.debug) {
@@ -344,7 +343,7 @@ class OrbatChart {
     renderedChart.levels.forEach((renderedLevel, yIdx) => {
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
         unitLevelGroup.units.forEach((unitNode, idx) => {
-          if (yIdx === nLevels-1 && idx > 0) return;
+          if (this.options.lastLevelLayout === LevelLayout.Stacked && yIdx === nLevels - 1 && idx > 0) return;
           this._drawUnitLevelGroupConnectorPath(unitNode);
         });
         this._drawUnitLevelConnectorPath(unitLevelGroup.units);
