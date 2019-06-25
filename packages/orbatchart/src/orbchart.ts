@@ -1,9 +1,10 @@
 import { Symbol } from "milsymbol";
 import { select } from "d3-selection";
-import { flattenArray, walkTree } from "./utils";
+import { arrSum, flattenArray, walkTree } from "./utils";
 import {
   ChartOrientation,
   GElementSelection,
+  LevelLayout,
   OrbChartOptions,
   Point,
   RenderedChart,
@@ -43,10 +44,6 @@ export const DEFAULT_OPTIONS = {
 
 export const DEFAULT_CHART_WIDTH = 600;
 export const DEFAULT_CHART_HEIGHT = 600;
-
-function arrSum(array: number[]): number {
-  return array.reduce((a, b) => a + b, 0);
-}
 
 function createUnitNodeInfo(unit: Unit, options: Partial<OrbChartOptions>): UnitNodeInfo {
   let symb: Symbol;
@@ -248,17 +245,21 @@ class OrbatChart {
 
   private _doNodeLayout(renderedChart: RenderedChart) {
     const numberOfLevels = this.groupedLevels.length;
+    const maxLevels = this.options.maxLevels || numberOfLevels;
     const chartHeight = this.height;
     renderedChart.levels.forEach((renderedLevel, yIdx) => {
       // if (options.orientation === ChartOrientation.Bottom)
       const y = chartHeight * ((yIdx + 1) / (numberOfLevels + 1));
-      this._renderLevel(renderedLevel, y)
+      let levelLayout = LevelLayout.Horizontal;
+      if (yIdx === maxLevels - 1) levelLayout = LevelLayout.Stacked;
+      this._renderLevel(renderedLevel, y, levelLayout);
     });
   }
 
-  private _renderLevel(renderedLevel: RenderedLevel, y: number) {
+  private _renderLevel(renderedLevel: RenderedLevel, y: number, levelLayout: LevelLayout = LevelLayout.Horizontal) {
     const options = this.options;
     const chartWidth = this.width;
+    const svg = this.svg;
     const renderGroups = renderedLevel.unitGroups;
     const unitsOnLevel = flattenArray<RenderedUnitNode>(renderGroups.map(unitGroup => unitGroup.units));
     const numberOfUnitsOnLevel = unitsOnLevel.length;
@@ -267,42 +268,83 @@ class OrbatChart {
     const availableSpace = chartWidth - totalWidth;
     const padding = availableSpace / numberOfUnitsOnLevel;
 
-    let xIdx = 0;
-    let prevX = -padding / 2;
+    switch (levelLayout) {
+      case LevelLayout.Horizontal:
+        _doHorizontalLayout();
+        break;
+      case LevelLayout.Stacked:
+        _doStackedLayout();
+        break;
+      default:
+        console.warn("Unhandled layout", levelLayout);
+    }
 
-    renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
-      let levelGroupGElement = unitLevelGroup.groupElement;
-
-      for (const unitNode of unitLevelGroup.units) {
-        let x;
-        if (options.unitLevelDistance == UnitLevelDistance.EqualPadding) {
-          x = prevX + unitNode.boundingBox.width / 2 + padding;
-        } else {
-          x = ((xIdx + 1) * chartWidth) / (numberOfUnitsOnLevel + 1);
-        }
-
-        unitNode.x = x;
-        unitNode.y = y;
-        unitNode.ly = y + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
-        prevX = unitNode.x + unitNode.boundingBox.width / 2;
-
-        putGroupAt(unitNode.groupElement, unitNode, x, y, options.debug);
-        if (options.debug) {
-          drawDebugPoint(this.svg, x, y);
-          drawDebugPoint(this.svg, x, unitNode.ly);
-        }
-
-        xIdx += 1;
-      }
-      if (options.debug) drawDebugRect(levelGroupGElement, "yellow");
-    });
     if (options.debug) drawDebugRect(renderedLevel.groupElement);
+
+    function _doHorizontalLayout() {
+      let xIdx = 0;
+      let prevX = -padding / 2;
+
+      renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
+        for (const unitNode of unitLevelGroup.units) {
+          let x;
+          if (options.unitLevelDistance == UnitLevelDistance.EqualPadding) {
+            x = prevX + unitNode.boundingBox.width / 2 + padding;
+          } else {
+            x = ((xIdx + 1) * chartWidth) / (numberOfUnitsOnLevel + 1);
+          }
+
+          unitNode.x = x;
+          unitNode.y = y;
+          unitNode.ly = y + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
+          prevX = unitNode.x + unitNode.boundingBox.width / 2;
+
+          putGroupAt(unitNode.groupElement, unitNode, x, y, options.debug);
+          if (options.debug) {
+            drawDebugPoint(svg, x, y);
+            drawDebugPoint(svg, x, unitNode.ly);
+          }
+
+          xIdx += 1;
+        }
+        if (options.debug) drawDebugRect(unitLevelGroup.groupElement, "yellow");
+      });
+    }
+
+    function _doStackedLayout() {
+      const groupsOnLevel = renderedLevel.unitGroups.length;
+
+
+      renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
+        let prevY = y;
+        for (const [yIdx, unitNode] of unitLevelGroup.units.entries()) {
+
+          const x = unitNode.parent ? unitNode.parent.x : ((groupIdx + 1) * chartWidth) / (groupsOnLevel + 1);
+          const ny = prevY;
+
+          unitNode.x = x;
+          unitNode.y = ny;
+          unitNode.ly = ny + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
+          prevY = unitNode.ly+ 50;
+
+          putGroupAt(unitNode.groupElement, unitNode, x, ny, options.debug);
+          if (options.debug) {
+            drawDebugPoint(svg, x, y);
+            drawDebugPoint(svg, x, unitNode.ly);
+          }
+
+        }
+        if (options.debug) drawDebugRect(unitLevelGroup.groupElement, "yellow");
+      });
+    }
   }
 
   private _drawConnectors(renderedChart: RenderedChart) {
+    const nLevels = this.options.maxLevels || renderedChart.levels.length;
     renderedChart.levels.forEach((renderedLevel, yIdx) => {
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
-        unitLevelGroup.units.forEach(unitNode => {
+        unitLevelGroup.units.forEach((unitNode, idx) => {
+          if (yIdx === nLevels-1 && idx > 0) return;
           this._drawUnitLevelGroupConnectorPath(unitNode);
         });
         this._drawUnitLevelConnectorPath(unitLevelGroup.units);

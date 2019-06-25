@@ -25,3 +25,7 @@ export function flattenArray<T>(array: any[]): T[] {
   return ([] as T[]).concat(...array);
   // return array.reduce((acc, val) => acc.concat(val), []);
 }
+
+export function arrSum(array: number[]): number {
+  return array.reduce((a, b) => a + b, 0);
+}

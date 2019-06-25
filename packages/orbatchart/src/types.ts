@@ -12,6 +12,17 @@ export enum ChartOrientation {
   // Right = "RIGHT"
 }
 
+/**
+ * Different ways to place units
+ */
+export enum LevelLayout {
+  Horizontal = "HORIZONTAL",
+  Stacked = "STACKED",
+  Tree = "TREE",
+  TreeLeft = "TREE_LEFT",
+  TreeRight = "TREE_RIGHT",
+}
+
 export enum UnitLevelDistance {
   Fixed = "FIXED",
   EqualPadding = "EQUAL_PADDING"
