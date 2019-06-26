@@ -3,7 +3,7 @@
 import Vue from "vue";
 import OrbatChart from "orbatchart";
 import {DEFAULT_OPTIONS} from "orbatchart";
-import { LevelLayout } from "../../../packages/orbatchart/src";
+import { LevelLayout } from "orbatchart";
 
 export default Vue.extend({
   name: "OrbatChart",

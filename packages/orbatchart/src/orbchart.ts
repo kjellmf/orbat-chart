@@ -2,7 +2,6 @@ import { Symbol } from "milsymbol";
 import { select } from "d3-selection";
 import { arrSum, flattenArray, walkTree } from "./utils";
 import {
-  ChartOrientation,
   GElementSelection,
   LevelLayout,
   OrbChartOptions,
@@ -17,6 +16,14 @@ import {
   UnitNodeInfo,
   VerticalAlignment
 } from "./types";
+import {
+  DEFAULT_CHART_HEIGHT,
+  DEFAULT_CHART_WIDTH,
+  DEFAULT_OPTIONS,
+  MARGIN_TOP,
+  STACKED_OFFSET,
+  TREE_LEFT_RIGHT_OFFSET
+} from "./defaults";
 
 const CHART_STYLE = `
 .o-line {
@@ -33,24 +40,6 @@ const CHART_STYLE = `
   font-weight: bold;
 }
 `;
-
-export const DEFAULT_OPTIONS = {
-  symbolSize: 32,
-  maxLevels: 0,
-  debug: false,
-  connectorOffset: 5,
-  orientation: ChartOrientation.Top,
-  unitLevelDistance: UnitLevelDistance.Fixed,
-  lastLevelLayout: LevelLayout.Horizontal,
-  verticalAlignment: VerticalAlignment.Top,
-  levelPadding: 200,
-} as OrbChartOptions;
-
-export const DEFAULT_CHART_WIDTH = 600;
-export const DEFAULT_CHART_HEIGHT = 600;
-export const TREE_LEFT_RIGHT_OFFSET = 40;
-export const STACKED_OFFSET = 50;
-export const MARGIN_TOP = 100;
 
 function createUnitNodeInfo(unit: Unit, options: Partial<OrbChartOptions>): UnitNodeInfo {
   let symb: Symbol;
@@ -171,7 +160,6 @@ class OrbatChart {
     renderedChart.levels = this._createInitialNodeStructure(this.svg, this.groupedLevels);
     this._doNodeLayout(renderedChart);
     this._drawConnectors(renderedChart);
-
     return this.svg.node() as Element;
   }
 
