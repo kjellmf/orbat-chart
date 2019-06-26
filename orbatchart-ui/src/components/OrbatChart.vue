@@ -15,8 +15,7 @@ export default Vue.extend({
     connectorOffset: {type: Number, default: DEFAULT_OPTIONS.connectorOffset},
     orientation: {type: String, default: DEFAULT_OPTIONS.orientation},
     unitLevelDistance: {type: String, default: DEFAULT_OPTIONS.unitLevelDistance},
-    stackLastLevel: {type: Boolean, default: false},
-    lastLevelLayout: {type: String, default: LevelLayout.Horizontal},
+    lastLevelLayout: {type: String, default: LevelLayout.Stacked},
     levelPadding: {type: Number, default: DEFAULT_OPTIONS.levelPadding}
   },
 
