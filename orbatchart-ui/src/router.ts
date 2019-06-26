@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import MainView from './views/MainView.vue';
+import MainViewToolbar from "@/views/MainViewToolbar.vue";
 
 Vue.use(Router);
 
@@ -9,7 +10,10 @@ export default new Router({
     {
       path: '/',
       name: 'mainView',
-      component: MainView,
+      components: {
+        default:MainView,
+        toolbar: MainViewToolbar
+      },
     },
     {
       path: '/about',

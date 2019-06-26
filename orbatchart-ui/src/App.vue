@@ -38,6 +38,7 @@
             >
               <v-icon>settings</v-icon>
             </v-btn>
+            <router-view name="toolbar"></router-view>
           </v-flex>
           <v-flex>
             <router-view/>
@@ -50,25 +51,25 @@
 
 <script lang="ts">
 
-  import { PanelMixins } from "./components/mixins";
-  import Vue from 'vue';
-  import { Unit } from "orbatchart";
+import { PanelMixins } from "./components/mixins";
+import Vue from 'vue';
+import { Unit } from "orbatchart";
 
 
-  import testOrbat from "./testorbat.json";
+import testOrbat from "./testorbat.json";
 
-  const ORBAT1: Unit = testOrbat;
+const ORBAT1: Unit = testOrbat;
 
-  export default Vue.extend({
-    mixins: [PanelMixins],
-    components: {},
-    data: () => ({
-      drawer: null,
-    }),
-    created() {
-      this.$store.commit("setOrbat", [ORBAT1]);
-    }
-  });
+export default Vue.extend({
+  mixins: [PanelMixins],
+  components: {},
+  data: () => ({
+    drawer: null,
+  }),
+  created() {
+    this.$store.commit("setOrbat", [ORBAT1]);
+  },
+});
 </script>
 <style>
 </style>

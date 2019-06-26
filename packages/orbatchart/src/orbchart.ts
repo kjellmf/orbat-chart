@@ -165,8 +165,10 @@ class OrbatChart {
 
   private _createSvgElement(parentElement: HTMLElement): RenderedChart {
     parentElement.innerHTML = "";
-    const svg = select(parentElement).append<SVGElement>("svg");
-    svg.attr("viewBox", `0 0 ${this.width} ${this.height}`);
+    const svg = select(parentElement).append<SVGElement>("svg")
+      .attr("viewBox", `0 0 ${this.width} ${this.height}`)
+      .attr("class", "orbat-chart");
+
     svg.append("style").text(CHART_STYLE);
     svg.attr("width", "100%");
     svg.attr("height", "100%");
