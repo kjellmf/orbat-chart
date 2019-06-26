@@ -10,7 +10,7 @@
         <SettingsPanel/>
       </SlidePanel>
     </v-flex>
-    <v-flex>
+    <v-flex class="chart-panel">
       <OrbatChart
         :unit="currentUnit"
         class="px-0 py-0 home"
@@ -77,7 +77,12 @@ export default class MainView extends mixins(PanelMixins) {
 </script>
 
 <style scoped>
-  .home {
-    overflow-y: auto;
-  }
+.home {
+  overflow-y: auto;
+}
+
+.chart-panel {
+  max-height: 100vh;
+  overflow: auto;
+}
 </style>
