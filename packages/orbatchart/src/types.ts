@@ -28,6 +28,12 @@ export enum UnitLevelDistance {
   EqualPadding = "EQUAL_PADDING"
 }
 
+export enum VerticalAlignment {
+  Top = "TOP",
+  Middle = "MIDDLE",
+  Bottom = "BOTTOM"
+}
+
 export interface Size {
   width: number;
   height: number
@@ -63,6 +69,8 @@ export interface OrbChartOptions {
   orientation: ChartOrientation;
   unitLevelDistance: UnitLevelDistance;
   lastLevelLayout: LevelLayout;
+  verticalAlignment: VerticalAlignment;
+  levelPadding: number;
 }
 
 export type UnitNodeVisitorCallback = (unit: Unit, level: number, parent: Unit | null) => void

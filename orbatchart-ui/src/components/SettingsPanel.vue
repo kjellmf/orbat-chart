@@ -15,6 +15,11 @@
       type="number" min="0"
       v-model.number="settings.connectorOffset"
     />
+    <v-text-field
+      label="Level padding"
+      type="number" min="0"
+      v-model.number="settings.levelPadding"
+    />
     <v-select
       label="Unit spacing"
       :items="unitLevelDistance"

@@ -16,7 +16,8 @@ export default Vue.extend({
     orientation: {type: String, default: DEFAULT_OPTIONS.orientation},
     unitLevelDistance: {type: String, default: DEFAULT_OPTIONS.unitLevelDistance},
     stackLastLevel: {type: Boolean, default: false},
-    lastLevelLayout: {type: String, default: LevelLayout.Horizontal}
+    lastLevelLayout: {type: String, default: LevelLayout.Horizontal},
+    levelPadding: {type: Number, default: DEFAULT_OPTIONS.levelPadding}
   },
 
   data: () => ({
@@ -67,6 +68,7 @@ export default Vue.extend({
       orientation: this.orientation,
       unitLevelDistance: this.unitLevelDistance,
       lastLevelLayout: this.lastLevelLayout,
+      levelPadding: this.levelPadding,
     });
     this.orbchart = orbchart;
     if (this.isMounted) {

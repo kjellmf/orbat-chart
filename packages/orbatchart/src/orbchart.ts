@@ -14,7 +14,8 @@ import {
   SVGElementSelection,
   Unit,
   UnitLevelDistance,
-  UnitNodeInfo
+  UnitNodeInfo,
+  VerticalAlignment
 } from "./types";
 
 const CHART_STYLE = `
@@ -41,12 +42,15 @@ export const DEFAULT_OPTIONS = {
   orientation: ChartOrientation.Top,
   unitLevelDistance: UnitLevelDistance.Fixed,
   lastLevelLayout: LevelLayout.Horizontal,
+  verticalAlignment: VerticalAlignment.Top,
+  levelPadding: 200,
 } as OrbChartOptions;
 
 export const DEFAULT_CHART_WIDTH = 600;
 export const DEFAULT_CHART_HEIGHT = 600;
 export const TREE_LEFT_RIGHT_OFFSET = 40;
 export const STACKED_OFFSET = 50;
+export const MARGIN_TOP = 100;
 
 function createUnitNodeInfo(unit: Unit, options: Partial<OrbChartOptions>): UnitNodeInfo {
   let symb: Symbol;
@@ -254,9 +258,17 @@ class OrbatChart {
     const numberOfLevels = this.groupedLevels.length;
     const maxLevels = this.options.maxLevels || numberOfLevels;
     const chartHeight = this.height;
+    let prevY = MARGIN_TOP;
     renderedChart.levels.forEach((renderedLevel, yIdx) => {
       // if (options.orientation === ChartOrientation.Bottom)
-      const y = chartHeight * ((yIdx + 1) / (numberOfLevels + 1));
+      let y: number;
+      if (this.options.verticalAlignment === VerticalAlignment.Middle) {
+        y = chartHeight * ((yIdx + 1) / (numberOfLevels + 1));
+      } else {
+        y = prevY;
+        prevY += this.options.levelPadding;
+      }
+
       let levelLayout = LevelLayout.Horizontal;
       if (yIdx === maxLevels - 1) levelLayout = this.options.lastLevelLayout;
       this._renderLevel(renderedLevel, y, levelLayout);
