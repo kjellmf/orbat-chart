@@ -17,7 +17,7 @@ const state = <State>{
   orbatPanel: true,
   settingsPanel: true,
   currentUnit: null,
-  chartOptions: { ...DEFAULT_OPTIONS, maxLevels: 4, lastLevelLayout:LevelLayout.Stacked}
+  chartOptions: { ...DEFAULT_OPTIONS, maxLevels: 4, lastLevelLayout:LevelLayout.TreeRight}
 };
 
 export default new Vuex.Store({

@@ -57,7 +57,7 @@ function createUnitNodeInfo(unit: Unit, options: Partial<OrbChartOptions>): Unit
   const anchor: Point = symb.getAnchor();
   const octagonAnchor: Point = symb.getOctagonAnchor();
   return {
-    symbolBoxSize: size, anchor, octagonAnchor, symb, unit: unit, x: 0, y: 0, ly: 0
+    symbolBoxSize: size, anchor, octagonAnchor, symb, unit: unit, x: 0, y: 0, ly: 0, lx: 0, rx: 0
   };
 }
 
@@ -126,7 +126,25 @@ function createUnitGroup(parentElement: GElementSelection, unitNode: UnitNodeInf
 }
 
 function isStackedLayout(layout: LevelLayout) {
-  return layout === LevelLayout.Stacked || layout === LevelLayout.TreeRight || layout === LevelLayout.TreeLeft;
+  return layout === LevelLayout.Stacked;
+}
+
+function isLeftRightLayout(layout: LevelLayout) {
+  return layout === LevelLayout.TreeRight || layout === LevelLayout.TreeLeft;
+}
+
+function calculateAnchorPoints(unitNode: RenderedUnitNode) {
+  const { x, y } = unitNode;
+  unitNode.ly = y + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
+  unitNode.lx = x - (unitNode.boundingBox.width / 2);
+  unitNode.rx = x + (unitNode.boundingBox.width / 2);
+}
+
+function drawDebugAnchors(svg: SVGElementSelection, unitNode: RenderedUnitNode) {
+  drawDebugPoint(svg, unitNode.x, unitNode.y);
+  drawDebugPoint(svg, unitNode.x, unitNode.ly);
+  drawDebugPoint(svg, unitNode.lx, unitNode.y);
+  drawDebugPoint(svg, unitNode.rx, unitNode.y);
 }
 
 class OrbatChart {
@@ -307,14 +325,13 @@ class OrbatChart {
 
           unitNode.x = x;
           unitNode.y = y;
-          unitNode.ly = y + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
-          prevX = unitNode.x + unitNode.boundingBox.width / 2;
+          calculateAnchorPoints(unitNode);
 
+          prevX = unitNode.x + unitNode.boundingBox.width / 2;
           putGroupAt(unitNode.groupElement, unitNode, x, y, options.debug);
-          if (options.debug) {
-            drawDebugPoint(svg, x, y);
-            drawDebugPoint(svg, x, unitNode.ly);
-          }
+
+          if (options.debug) drawDebugAnchors(svg, unitNode);
+
 
           xIdx += 1;
         }
@@ -339,15 +356,12 @@ class OrbatChart {
 
           unitNode.x = x;
           unitNode.y = ny;
-          unitNode.ly = ny + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
+          calculateAnchorPoints(unitNode);
 
           prevY = unitNode.ly + STACKED_OFFSET;
 
           putGroupAt(unitNode.groupElement, unitNode, x, ny, options.debug);
-          if (options.debug) {
-            drawDebugPoint(svg, x, ny);
-            drawDebugPoint(svg, x, unitNode.ly);
-          }
+          if (options.debug) drawDebugAnchors(svg, unitNode)
 
         }
         if (options.debug) drawDebugRect(unitLevelGroup.groupElement, "yellow");
@@ -359,12 +373,17 @@ class OrbatChart {
     const nLevels = this.options.maxLevels || renderedChart.levels.length;
     renderedChart.levels.forEach((renderedLevel, yIdx) => {
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
+        let currentLevelLayout = yIdx === nLevels - 1 ? this.options.lastLevelLayout : LevelLayout.Horizontal;
         unitLevelGroup.units.forEach((unitNode, idx) => {
-          if (isStackedLayout(this.options.lastLevelLayout)
-            && yIdx === nLevels - 1 && idx > 0) return;
+          if (currentLevelLayout === LevelLayout.Stacked && idx > 0) return;
+          if (isLeftRightLayout(currentLevelLayout)) return;
           this._drawUnitLevelGroupConnectorPath(unitNode);
         });
-        this._drawUnitLevelConnectorPath(unitLevelGroup.units);
+        if (isLeftRightLayout(currentLevelLayout)) {
+          this._drawUnitLevelTreeLeftRightConnectorPath(unitLevelGroup.units, currentLevelLayout);
+        } else {
+          this._drawUnitLevelConnectorPath(unitLevelGroup.units);
+        }
       });
     });
   }
@@ -396,6 +415,30 @@ class OrbatChart {
     svg.append("path")
       .attr("d", d)
       .classed("o-line", true);
+  }
+
+  private _drawUnitLevelTreeLeftRightConnectorPath(unitLevelGroup: RenderedUnitNode[], levelLayout: LevelLayout) {
+    let svg = this.svg;
+    let lastUnitInGroup = unitLevelGroup[unitLevelGroup.length - 1];
+    let parentUnit = lastUnitInGroup.parent as RenderedUnitNode;
+    if (!parentUnit) return;
+
+    const d1 = `M ${parentUnit.x}, ${parentUnit.ly + this.options.connectorOffset} V ${lastUnitInGroup.y}`;
+    svg.append("path")
+      .attr("d", d1)
+      .classed("o-line", true);
+
+    for (const unit of unitLevelGroup) {
+      let d1;
+      if (levelLayout === LevelLayout.TreeRight)
+        d1 = `M ${unit.lx - this.options.connectorOffset}, ${unit.y}  H ${parentUnit.x}`;
+      else
+        d1 = `M ${unit.rx + this.options.connectorOffset}, ${unit.y}  H ${parentUnit.x}`;
+      svg.append("path")
+        .attr("d", d1)
+        .classed("o-line", true);
+    }
+
   }
 }
 

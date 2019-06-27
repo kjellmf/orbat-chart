@@ -54,6 +54,8 @@ export interface UnitNodeInfo {
   parent?: UnitNodeInfo;
   unit: Unit;
   ly: number;
+  lx: number;
+  rx: number;
 }
 
 export type OnClickCallback = (unit: Unit) => void;
