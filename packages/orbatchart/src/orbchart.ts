@@ -299,6 +299,9 @@ class OrbatChart {
       case LevelLayout.Horizontal:
         _doHorizontalLayout();
         break;
+      case LevelLayout.Tree:
+        _doTreeLayout();
+        break;
       case LevelLayout.Stacked:
       case LevelLayout.TreeRight:
       case LevelLayout.TreeLeft:
@@ -339,6 +342,35 @@ class OrbatChart {
       });
     }
 
+    function _doTreeLayout() {
+      const groupsOnLevel = renderedLevel.unitGroups.length;
+      renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
+        let prevY = y;
+        for (const [yIdx, unitNode] of unitLevelGroup.units.entries()) {
+          let x = unitNode.parent ? unitNode.parent.x : ((groupIdx + 1) * chartWidth) / (groupsOnLevel + 1);
+
+          if (yIdx % 2) {
+            x += TREE_LEFT_RIGHT_OFFSET;
+          } else {
+            x -= TREE_LEFT_RIGHT_OFFSET;
+          }
+          const ny = prevY;
+          unitNode.x = x;
+          unitNode.y = ny;
+          calculateAnchorPoints(unitNode);
+
+          if (yIdx % 2) prevY = unitNode.ly + STACKED_OFFSET;
+
+          putGroupAt(unitNode.groupElement, unitNode, x, ny, options.debug);
+          if (options.debug) drawDebugAnchors(svg, unitNode)
+
+        }
+        if (options.debug) drawDebugRect(unitLevelGroup.groupElement, "yellow");
+      });
+
+
+    }
+
     function _doStackedLayout(layout: LevelLayout) {
       const groupsOnLevel = renderedLevel.unitGroups.length;
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
@@ -346,14 +378,12 @@ class OrbatChart {
         for (const [yIdx, unitNode] of unitLevelGroup.units.entries()) {
           let x = unitNode.parent ? unitNode.parent.x : ((groupIdx + 1) * chartWidth) / (groupsOnLevel + 1);
 
-
           if (layout === LevelLayout.TreeRight) {
             x += TREE_LEFT_RIGHT_OFFSET;
           } else if (layout === LevelLayout.TreeLeft) {
             x -= TREE_LEFT_RIGHT_OFFSET;
           }
           const ny = prevY;
-
           unitNode.x = x;
           unitNode.y = ny;
           calculateAnchorPoints(unitNode);
@@ -377,12 +407,17 @@ class OrbatChart {
         unitLevelGroup.units.forEach((unitNode, idx) => {
           if (currentLevelLayout === LevelLayout.Stacked && idx > 0) return;
           if (isLeftRightLayout(currentLevelLayout)) return;
+          if (currentLevelLayout === LevelLayout.Tree) return;
           this._drawUnitLevelGroupConnectorPath(unitNode);
         });
-        if (isLeftRightLayout(currentLevelLayout)) {
-          this._drawUnitLevelTreeLeftRightConnectorPath(unitLevelGroup.units, currentLevelLayout);
-        } else {
-          this._drawUnitLevelConnectorPath(unitLevelGroup.units);
+        switch (currentLevelLayout) {
+          case LevelLayout.TreeRight:
+          case LevelLayout.TreeLeft:
+          case LevelLayout.Tree:
+            this._drawUnitLevelTreeLeftRightConnectorPath(unitLevelGroup.units, currentLevelLayout);
+            break;
+          default:
+            this._drawUnitLevelConnectorPath(unitLevelGroup.units);
         }
       });
     });
@@ -428,9 +463,9 @@ class OrbatChart {
       .attr("d", d1)
       .classed("o-line", true);
 
-    for (const unit of unitLevelGroup) {
+    for (const [yIdx, unit] of unitLevelGroup.entries()) {
       let d1;
-      if (levelLayout === LevelLayout.TreeRight)
+      if (levelLayout === LevelLayout.TreeRight || levelLayout === LevelLayout.Tree && yIdx % 2)
         d1 = `M ${unit.lx - this.options.connectorOffset}, ${unit.y}  H ${parentUnit.x}`;
       else
         d1 = `M ${unit.rx + this.options.connectorOffset}, ${unit.y}  H ${parentUnit.x}`;

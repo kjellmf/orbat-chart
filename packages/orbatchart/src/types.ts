@@ -18,7 +18,7 @@ export enum ChartOrientation {
 export enum LevelLayout {
   Horizontal = "HORIZONTAL",
   Stacked = "STACKED",
-  //Tree = "TREE",
+  Tree = "TREE",
   TreeLeft = "TREE_LEFT",
   TreeRight = "TREE_RIGHT",
 }
