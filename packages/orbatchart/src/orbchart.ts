@@ -131,7 +131,6 @@ export function isTreeLayout(layout: LevelLayout) {
 }
 
 
-
 function calculateAnchorPoints(unitNode: RenderedUnitNode) {
   const { x, y } = unitNode;
   unitNode.ly = y + (unitNode.boundingBox.height - unitNode.octagonAnchor.y);
@@ -462,12 +461,15 @@ class OrbatChart {
       .attr("d", d1)
       .classed("o-line", true);
 
+    // find the widest node
+    let maxWidth = Math.max(...unitLevelGroup.map(u => u.boundingBox.width));
     for (const [yIdx, unit] of unitLevelGroup.entries()) {
       let d1;
+      const delta = Math.abs(unit.boundingBox.width / 2 - maxWidth / 2);
       if (levelLayout === LevelLayout.TreeRight || levelLayout === LevelLayout.Tree && yIdx % 2)
-        d1 = `M ${unit.lx - this.options.connectorOffset}, ${unit.y}  H ${parentUnit.x}`;
+        d1 = `M ${unit.lx - delta - this.options.connectorOffset}, ${unit.y}  H ${parentUnit.x}`;
       else
-        d1 = `M ${unit.rx + this.options.connectorOffset}, ${unit.y}  H ${parentUnit.x}`;
+        d1 = `M ${unit.rx + delta + this.options.connectorOffset}, ${unit.y}  H ${parentUnit.x}`;
       svg.append("path")
         .attr("d", d1)
         .classed("o-line", true);
