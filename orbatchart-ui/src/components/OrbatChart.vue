@@ -17,7 +17,8 @@ export default Vue.extend({
     unitLevelDistance: { type: String, default: DEFAULT_OPTIONS.unitLevelDistance },
     lastLevelLayout: { type: String, default: LevelLayout.Stacked },
     levelPadding: { type: Number, default: DEFAULT_OPTIONS.levelPadding },
-    treeOffset: { type: Number, default: DEFAULT_OPTIONS.treeOffset }
+    treeOffset: { type: Number, default: DEFAULT_OPTIONS.treeOffset },
+    stackedOffset: { type: Number, default: DEFAULT_OPTIONS.stackedOffset }
   },
 
   data: () => ({
@@ -70,6 +71,7 @@ export default Vue.extend({
       lastLevelLayout: this.lastLevelLayout,
       levelPadding: this.levelPadding,
       treeOffset: this.treeOffset,
+      stackedOffset: this.stackedOffset,
     });
     this.orbchart = orbchart;
     if (this.isMounted) {

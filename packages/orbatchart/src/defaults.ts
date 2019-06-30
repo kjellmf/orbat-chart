@@ -18,5 +18,6 @@ export const DEFAULT_OPTIONS = {
   verticalAlignment: VerticalAlignment.Top,
   levelPadding: 175,
   treeOffset: TREE_LEFT_RIGHT_OFFSET,
+  stackedOffset: STACKED_OFFSET,
 } as OrbChartOptions;
 

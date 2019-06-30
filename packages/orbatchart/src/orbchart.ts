@@ -16,7 +16,7 @@ import {
   UnitNodeInfo,
   VerticalAlignment
 } from "./types";
-import { DEFAULT_CHART_HEIGHT, DEFAULT_CHART_WIDTH, DEFAULT_OPTIONS, MARGIN_TOP, STACKED_OFFSET, } from "./defaults";
+import { DEFAULT_CHART_HEIGHT, DEFAULT_CHART_WIDTH, DEFAULT_OPTIONS, MARGIN_TOP, } from "./defaults";
 
 const CHART_STYLE = `
 .o-line {
@@ -128,6 +128,13 @@ function isLeftRightLayout(layout: LevelLayout) {
 
 export function isTreeLayout(layout: LevelLayout) {
   return layout === LevelLayout.TreeRight || layout === LevelLayout.TreeLeft || layout === LevelLayout.Tree;
+}
+
+export function isStackedTreeLayout(layout: LevelLayout) {
+  return layout === LevelLayout.TreeRight ||
+    layout === LevelLayout.TreeLeft ||
+    layout === LevelLayout.Tree ||
+    layout === LevelLayout.Stacked;
 }
 
 
@@ -357,7 +364,7 @@ class OrbatChart {
           unitNode.y = ny;
           calculateAnchorPoints(unitNode);
 
-          if (yIdx % 2) prevY = unitNode.ly + STACKED_OFFSET;
+          if (yIdx % 2) prevY = unitNode.ly + options.stackedOffset;
 
           putGroupAt(unitNode.groupElement, unitNode, x, ny, options.debug);
           if (options.debug) drawDebugAnchors(svg, unitNode)
@@ -386,7 +393,7 @@ class OrbatChart {
           unitNode.y = ny;
           calculateAnchorPoints(unitNode);
 
-          prevY = unitNode.ly + STACKED_OFFSET;
+          prevY = unitNode.ly + options.stackedOffset;
 
           putGroupAt(unitNode.groupElement, unitNode, x, ny, options.debug);
           if (options.debug) drawDebugAnchors(svg, unitNode)

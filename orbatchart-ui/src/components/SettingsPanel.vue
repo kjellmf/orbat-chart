@@ -26,6 +26,12 @@
       type="number" min="0"
       v-model.number="settings.treeOffset"
     />
+    <v-text-field
+      :disabled="noStackedTreeOffset"
+      label="Stacked offset"
+      type="number" min="0"
+      v-model.number="settings.stackedOffset"
+    />
     <v-select
       label="Unit spacing"
       :items="unitLevelDistance"
@@ -50,7 +56,7 @@
   </v-container>
 </template>
 <script lang="ts">
-import { ChartOrientation, LevelLayout, UnitLevelDistance, isTreeLayout } from "orbatchart";
+import { ChartOrientation, LevelLayout, UnitLevelDistance, isTreeLayout, isStackedTreeLayout } from "orbatchart";
 import { PanelMixins } from "@/components/mixins";
 import { mixins } from "vue-class-component";
 import { Component } from "vue-property-decorator";
@@ -77,6 +83,10 @@ export default class SettingsPanel extends mixins(PanelMixins) {
 
   get noTreeOffset() {
     return !isTreeLayout(this.settings.lastLevelLayout);
+  }
+
+  get noStackedTreeOffset() {
+    return !isStackedTreeLayout(this.settings.lastLevelLayout);
   }
 };
 
