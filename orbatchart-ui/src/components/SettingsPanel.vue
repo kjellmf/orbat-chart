@@ -20,6 +20,12 @@
       type="number" min="0"
       v-model.number="settings.levelPadding"
     />
+    <v-text-field
+      :disabled="noTreeOffset"
+      label="Tree offset"
+      type="number" min="0"
+      v-model.number="settings.treeOffset"
+    />
     <v-select
       label="Unit spacing"
       :items="unitLevelDistance"
@@ -44,9 +50,10 @@
   </v-container>
 </template>
 <script lang="ts">
-import Vue from "vue";
-import { ChartOrientation, LevelLayout, UnitLevelDistance } from "orbatchart";
+import { ChartOrientation, LevelLayout, UnitLevelDistance, isTreeLayout } from "orbatchart";
 import { PanelMixins } from "@/components/mixins";
+import { mixins } from "vue-class-component";
+import { Component } from "vue-property-decorator";
 
 function getMap(myEnum) {
   return Object.entries(myEnum).map(([key, value]) => {
@@ -54,21 +61,23 @@ function getMap(myEnum) {
   });
 }
 
-export default Vue.extend({
-  mixins: [PanelMixins],
-  name: 'SettingsPanel',
-  computed: {
-    orientation() {
-      return getMap(ChartOrientation);
-    },
-
-    unitLevelDistance() {
-      return getMap(UnitLevelDistance);
-    },
-
-    lastLevelLayout() {
-      return getMap(LevelLayout);
-    }
+@Component
+export default class SettingsPanel extends mixins(PanelMixins) {
+  get orientation() {
+    return getMap(ChartOrientation);
   }
-});
+
+  get unitLevelDistance() {
+    return getMap(UnitLevelDistance);
+  }
+
+  get lastLevelLayout() {
+    return getMap(LevelLayout);
+  }
+
+  get noTreeOffset() {
+    return !isTreeLayout(this.settings.lastLevelLayout);
+  }
+};
+
 </script>

@@ -73,6 +73,7 @@ export interface OrbChartOptions {
   lastLevelLayout: LevelLayout;
   verticalAlignment: VerticalAlignment;
   levelPadding: number;
+  treeOffset: number;
 }
 
 export type UnitNodeVisitorCallback = (unit: Unit, level: number, parent: Unit | null) => void

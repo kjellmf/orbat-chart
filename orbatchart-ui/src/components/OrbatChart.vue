@@ -2,21 +2,22 @@
 
 import Vue from "vue";
 import OrbatChart from "orbatchart";
-import {DEFAULT_OPTIONS} from "orbatchart";
+import { DEFAULT_OPTIONS } from "orbatchart";
 import { LevelLayout } from "orbatchart";
 
 export default Vue.extend({
   name: "OrbatChart",
   props: {
-    unit: {type: Object, required: true},
-    maxLevels: {type: Number, default: 3},
-    debug: {type: Boolean, default: false},
-    symbolSize: {type: Number, default: 32},
-    connectorOffset: {type: Number, default: DEFAULT_OPTIONS.connectorOffset},
-    orientation: {type: String, default: DEFAULT_OPTIONS.orientation},
-    unitLevelDistance: {type: String, default: DEFAULT_OPTIONS.unitLevelDistance},
-    lastLevelLayout: {type: String, default: LevelLayout.Stacked},
-    levelPadding: {type: Number, default: DEFAULT_OPTIONS.levelPadding}
+    unit: { type: Object, required: true },
+    maxLevels: { type: Number, default: 3 },
+    debug: { type: Boolean, default: false },
+    symbolSize: { type: Number, default: 32 },
+    connectorOffset: { type: Number, default: DEFAULT_OPTIONS.connectorOffset },
+    orientation: { type: String, default: DEFAULT_OPTIONS.orientation },
+    unitLevelDistance: { type: String, default: DEFAULT_OPTIONS.unitLevelDistance },
+    lastLevelLayout: { type: String, default: LevelLayout.Stacked },
+    levelPadding: { type: Number, default: DEFAULT_OPTIONS.levelPadding },
+    treeOffset: { type: Number, default: DEFAULT_OPTIONS.treeOffset }
   },
 
   data: () => ({
@@ -68,10 +69,11 @@ export default Vue.extend({
       unitLevelDistance: this.unitLevelDistance,
       lastLevelLayout: this.lastLevelLayout,
       levelPadding: this.levelPadding,
+      treeOffset: this.treeOffset,
     });
     this.orbchart = orbchart;
     if (this.isMounted) {
-      let svg = orbchart.toSVG({width: 1920, height: 1080}, this.$el);
+      let svg = orbchart.toSVG({ width: 1920, height: 1080 }, this.$el);
     }
 
     return h("div", {
@@ -86,12 +88,12 @@ export default Vue.extend({
 </script>
 
 <style>
-  .orbat-chart {
-    width: 100%;
-    height: 80%;
-    padding: 0;
-    margin: 0;
-  }
+.orbat-chart {
+  width: 100%;
+  height: 80%;
+  padding: 0;
+  margin: 0;
+}
 
 
 </style>

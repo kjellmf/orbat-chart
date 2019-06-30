@@ -16,14 +16,7 @@ import {
   UnitNodeInfo,
   VerticalAlignment
 } from "./types";
-import {
-  DEFAULT_CHART_HEIGHT,
-  DEFAULT_CHART_WIDTH,
-  DEFAULT_OPTIONS,
-  MARGIN_TOP,
-  STACKED_OFFSET,
-  TREE_LEFT_RIGHT_OFFSET
-} from "./defaults";
+import { DEFAULT_CHART_HEIGHT, DEFAULT_CHART_WIDTH, DEFAULT_OPTIONS, MARGIN_TOP, STACKED_OFFSET, } from "./defaults";
 
 const CHART_STYLE = `
 .o-line {
@@ -132,6 +125,12 @@ function isStackedLayout(layout: LevelLayout) {
 function isLeftRightLayout(layout: LevelLayout) {
   return layout === LevelLayout.TreeRight || layout === LevelLayout.TreeLeft;
 }
+
+export function isTreeLayout(layout: LevelLayout) {
+  return layout === LevelLayout.TreeRight || layout === LevelLayout.TreeLeft || layout === LevelLayout.Tree;
+}
+
+
 
 function calculateAnchorPoints(unitNode: RenderedUnitNode) {
   const { x, y } = unitNode;
@@ -350,9 +349,9 @@ class OrbatChart {
           let x = unitNode.parent ? unitNode.parent.x : ((groupIdx + 1) * chartWidth) / (groupsOnLevel + 1);
 
           if (yIdx % 2) {
-            x += TREE_LEFT_RIGHT_OFFSET;
+            x += options.treeOffset;
           } else {
-            x -= TREE_LEFT_RIGHT_OFFSET;
+            x -= options.treeOffset;
           }
           const ny = prevY;
           unitNode.x = x;
@@ -379,9 +378,9 @@ class OrbatChart {
           let x = unitNode.parent ? unitNode.parent.x : ((groupIdx + 1) * chartWidth) / (groupsOnLevel + 1);
 
           if (layout === LevelLayout.TreeRight) {
-            x += TREE_LEFT_RIGHT_OFFSET;
+            x += options.treeOffset;
           } else if (layout === LevelLayout.TreeLeft) {
-            x -= TREE_LEFT_RIGHT_OFFSET;
+            x -= options.treeOffset;
           }
           const ny = prevY;
           unitNode.x = x;
