@@ -2,14 +2,15 @@ import { Symbol } from "milsymbol";
 import { select } from "d3-selection";
 import { arrSum, flattenArray, walkTree } from "./utils";
 import {
+  BasicUnitNode,
   GElementSelection,
   LevelLayout,
-  OrbChartOptions,
+  OrbChartOptions, PartialOptions,
   Point,
   RenderedChart,
   RenderedLevel,
   RenderedUnitNode,
-  Size,
+  Size, SpecificOptions,
   SVGElementSelection,
   Unit,
   UnitLevelDistance,
@@ -52,6 +53,32 @@ function createUnitNodeInfo(unit: Unit, options: Partial<OrbChartOptions>): Unit
   return {
     symbolBoxSize: size, anchor, octagonAnchor, symb, unit: unit, x: 0, y: 0, ly: 0, lx: 0, rx: 0
   };
+}
+
+function convertBasicUnitNode2UnitNodeInfo(basicUnitNode: BasicUnitNode, options: Partial<OrbChartOptions>): UnitNodeInfo {
+  let symb: Symbol;
+  const symbolOptions = { size: options.symbolSize };
+  if (options.symbolGenerator) {
+    symb = options.symbolGenerator(basicUnitNode.unit.sidc, symbolOptions);
+  } else {
+    symb = new Symbol(
+      basicUnitNode.unit.sidc,
+      symbolOptions,
+      // {uniqueDesignation: node.shortName || node.name},
+    );
+  }
+  let unitNodeInfo = basicUnitNode as UnitNodeInfo;
+  unitNodeInfo.symbolBoxSize = symb.getSize();
+  unitNodeInfo.anchor = symb.getAnchor();
+  unitNodeInfo.octagonAnchor = symb.getOctagonAnchor();
+  unitNodeInfo.symb = symb;
+  unitNodeInfo.x = 0;
+  unitNodeInfo.y = 0;
+  unitNodeInfo.lx = 0;
+  unitNodeInfo.rx = 0;
+  unitNodeInfo.ly = 0;
+
+  return unitNodeInfo;
 }
 
 function putGroupAt(g: GElementSelection, node: UnitNodeInfo, x: number, y: number, debug = false) {
@@ -156,10 +183,10 @@ class OrbatChart {
   width!: number;
   height!: number;
   options: OrbChartOptions;
-  groupedLevels: UnitNodeInfo[][][] = [];
+  groupedLevels: BasicUnitNode[][][] = [];
   svg!: SVGElementSelection;
 
-  constructor(private rootNode: Unit, options: Partial<OrbChartOptions> = {}) {
+  constructor(private rootNode: Unit, options: Partial<OrbChartOptions> = {}, private specificOptions: SpecificOptions) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
     if (rootNode) this._computeOrbatInfo(rootNode);
   }
@@ -209,11 +236,11 @@ class OrbatChart {
   }
 
   private _computeOrbatInfo(rootNode: Unit) {
-    let levels: UnitNodeInfo[][] = [];
+    let levels: BasicUnitNode[][] = [];
     const nodeMap = {};
 
     walkTree(rootNode, (unit, levelIdx, parent) => {
-      const unitNodeInfo = createUnitNodeInfo(unit, this.options);
+      const unitNodeInfo: BasicUnitNode = { unit };
       const currentLevel = levels[levelIdx] || [];
       if (parent) {
         unitNodeInfo.parent = nodeMap[parent.id];
@@ -225,10 +252,10 @@ class OrbatChart {
 
     this.groupedLevels = _groupLevelsByParent();
 
-    function _groupLevelsByParent(): UnitNodeInfo[][][] {
-      let groupedLevels: UnitNodeInfo[][][] = [];
+    function _groupLevelsByParent(): BasicUnitNode[][][] {
+      let groupedLevels: BasicUnitNode[][][] = [];
       levels.forEach((level, yIdx) => {
-        let groupedLevel = level.reduce((accumulator: UnitNodeInfo[][], currentValue, currentIndex, array) => {
+        let groupedLevel = level.reduce((accumulator: BasicUnitNode[][], currentValue, currentIndex, array) => {
           if (currentIndex === 0) {
             accumulator.push([currentValue]);
             return accumulator;
@@ -246,22 +273,39 @@ class OrbatChart {
     }
   }
 
-  private _createInitialNodeStructure(parentElement: SVGElementSelection, groupedLevels: UnitNodeInfo[][][]): RenderedLevel[] {
+  private _createInitialNodeStructure(parentElement: SVGElementSelection, groupedLevels: BasicUnitNode[][][]): RenderedLevel[] {
     const options = this.options;
     let renderedLevels: RenderedLevel[] = [];
     for (const [yIdx, currentLevel] of groupedLevels.entries()) {
       if (options.maxLevels && yIdx >= options.maxLevels) break;
-
+      let levelSpecificOptions = {};
+      if (this.specificOptions.level && this.specificOptions.level[yIdx]) {
+        levelSpecificOptions = this.specificOptions.level[yIdx] || {};
+      }
       let levelGElement = createGroupElement(parentElement, "o-level");
       let renderedLevel: RenderedLevel = {
-        groupElement: levelGElement, unitGroups: []
+        groupElement: levelGElement, unitGroups: [], options: levelSpecificOptions
       };
+
       renderedLevels.push(renderedLevel);
+      let levelOptions = { ...options, ...levelSpecificOptions };
 
       currentLevel.forEach((unitLevelGroup, groupIdx) => {
+        let parent = unitLevelGroup[0].parent;
+        let lgSpecificOptions = {};
+        if (parent && this.specificOptions && this.specificOptions.levelGroup) {
+          lgSpecificOptions = this.specificOptions.levelGroup[parent.unit.id] || {};
+        }
+        let levelGroupOptions = { ...levelOptions, ...lgSpecificOptions };
         let levelGroupGElement = createGroupElement(levelGElement, "o-level-group");
-        const units = unitLevelGroup.map(unitNode => createUnitGroup(levelGroupGElement, unitNode, options));
-        renderedLevel.unitGroups.push({ groupElement: levelGroupGElement, units });
+        const units = unitLevelGroup.map(unitNode => {
+          let unitSpecificOptions = this.specificOptions && this.specificOptions.unit ? this.specificOptions.unit[unitNode.unit.id] || {} : {};
+          let unitOptions = { ...levelGroupOptions, ...unitSpecificOptions };
+          let renderedUnitNode = createUnitGroup(levelGroupGElement, convertBasicUnitNode2UnitNodeInfo(unitNode, unitOptions), unitOptions);
+          renderedUnitNode.options = unitSpecificOptions;
+          return renderedUnitNode;
+        });
+        renderedLevel.unitGroups.push({ groupElement: levelGroupGElement, units, options: lgSpecificOptions });
       });
     }
     return renderedLevels;
@@ -289,7 +333,7 @@ class OrbatChart {
   }
 
   private _renderLevel(renderedLevel: RenderedLevel, y: number, levelLayout: LevelLayout = LevelLayout.Horizontal) {
-    const options = this.options;
+    const levelOptions = { ...this.options, ...renderedLevel.options };
     const chartWidth = this.width;
     const svg = this.svg;
     const renderGroups = renderedLevel.unitGroups;
@@ -316,16 +360,18 @@ class OrbatChart {
         console.warn("Unhandled layout", levelLayout);
     }
 
-    if (options.debug) drawDebugRect(renderedLevel.groupElement);
+    if (levelOptions.debug) drawDebugRect(renderedLevel.groupElement);
 
     function _doHorizontalLayout() {
       let xIdx = 0;
       let prevX = -padding / 2;
 
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
+        let levelGroupOptions = { ...levelOptions, ...unitLevelGroup.options };
         for (const unitNode of unitLevelGroup.units) {
           let x;
-          if (options.unitLevelDistance == UnitLevelDistance.EqualPadding) {
+          let unitOptions = { ...levelGroupOptions, ...unitNode.options };
+          if (unitOptions.unitLevelDistance == UnitLevelDistance.EqualPadding) {
             x = prevX + unitNode.boundingBox.width / 2 + padding;
           } else {
             x = ((xIdx + 1) * chartWidth) / (numberOfUnitsOnLevel + 1);
@@ -336,41 +382,40 @@ class OrbatChart {
           calculateAnchorPoints(unitNode);
 
           prevX = unitNode.x + unitNode.boundingBox.width / 2;
-          putGroupAt(unitNode.groupElement, unitNode, x, y, options.debug);
+          putGroupAt(unitNode.groupElement, unitNode, x, y, unitOptions.debug);
 
-          if (options.debug) drawDebugAnchors(svg, unitNode);
-
-
+          if (unitOptions.debug) drawDebugAnchors(svg, unitNode);
           xIdx += 1;
         }
-        if (options.debug) drawDebugRect(unitLevelGroup.groupElement, "yellow");
+        if (levelGroupOptions.debug) drawDebugRect(unitLevelGroup.groupElement, "yellow");
       });
     }
 
     function _doTreeLayout() {
       const groupsOnLevel = renderedLevel.unitGroups.length;
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
+        let levelGroupOptions = { ...levelOptions, ...unitLevelGroup.options };
         let prevY = y;
         for (const [yIdx, unitNode] of unitLevelGroup.units.entries()) {
+          let unitOptions = { ...levelGroupOptions, ...unitNode.options };
           let x = unitNode.parent ? unitNode.parent.x : ((groupIdx + 1) * chartWidth) / (groupsOnLevel + 1);
 
           if (yIdx % 2) {
-            x += options.treeOffset;
+            x += unitOptions.treeOffset;
           } else {
-            x -= options.treeOffset;
+            x -= unitOptions.treeOffset;
           }
           const ny = prevY;
           unitNode.x = x;
           unitNode.y = ny;
           calculateAnchorPoints(unitNode);
 
-          if (yIdx % 2) prevY = unitNode.ly + options.stackedOffset;
+          if (yIdx % 2) prevY = unitNode.ly + unitOptions.stackedOffset;
 
-          putGroupAt(unitNode.groupElement, unitNode, x, ny, options.debug);
-          if (options.debug) drawDebugAnchors(svg, unitNode)
-
+          putGroupAt(unitNode.groupElement, unitNode, x, ny, unitOptions.debug);
+          if (unitOptions.debug) drawDebugAnchors(svg, unitNode)
         }
-        if (options.debug) drawDebugRect(unitLevelGroup.groupElement, "yellow");
+        if (levelGroupOptions.debug) drawDebugRect(unitLevelGroup.groupElement, "yellow");
       });
 
 
@@ -379,27 +424,27 @@ class OrbatChart {
     function _doStackedLayout(layout: LevelLayout) {
       const groupsOnLevel = renderedLevel.unitGroups.length;
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
+        let levelGroupOptions = { ...levelOptions, ...unitLevelGroup.options };
         let prevY = y;
         for (const [yIdx, unitNode] of unitLevelGroup.units.entries()) {
+          let unitOptions = { ...levelGroupOptions, ...unitNode.options };
           let x = unitNode.parent ? unitNode.parent.x : ((groupIdx + 1) * chartWidth) / (groupsOnLevel + 1);
 
           if (layout === LevelLayout.TreeRight) {
-            x += options.treeOffset;
+            x += unitOptions.treeOffset;
           } else if (layout === LevelLayout.TreeLeft) {
-            x -= options.treeOffset;
+            x -= unitOptions.treeOffset;
           }
           const ny = prevY;
           unitNode.x = x;
           unitNode.y = ny;
           calculateAnchorPoints(unitNode);
 
-          prevY = unitNode.ly + options.stackedOffset;
-
-          putGroupAt(unitNode.groupElement, unitNode, x, ny, options.debug);
-          if (options.debug) drawDebugAnchors(svg, unitNode)
-
+          prevY = unitNode.ly + unitOptions.stackedOffset;
+          putGroupAt(unitNode.groupElement, unitNode, x, ny, unitOptions.debug);
+          if (unitOptions.debug) drawDebugAnchors(svg, unitNode)
         }
-        if (options.debug) drawDebugRect(unitLevelGroup.groupElement, "yellow");
+        if (levelGroupOptions.debug) drawDebugRect(unitLevelGroup.groupElement, "yellow");
       });
     }
   }
@@ -407,39 +452,42 @@ class OrbatChart {
   private _drawConnectors(renderedChart: RenderedChart) {
     const nLevels = this.options.maxLevels || renderedChart.levels.length;
     renderedChart.levels.forEach((renderedLevel, yIdx) => {
+      let levelOptions = { ...this.options, ...renderedLevel.options };
       renderedLevel.unitGroups.forEach((unitLevelGroup, groupIdx) => {
         let currentLevelLayout = yIdx === nLevels - 1 ? this.options.lastLevelLayout : LevelLayout.Horizontal;
+        let levelGroupOptions = { ...levelOptions, ...unitLevelGroup.options };
         unitLevelGroup.units.forEach((unitNode, idx) => {
+          let unitOptions = { ...levelGroupOptions, ...unitNode.options };
           if (currentLevelLayout === LevelLayout.Stacked && idx > 0) return;
           if (isLeftRightLayout(currentLevelLayout)) return;
           if (currentLevelLayout === LevelLayout.Tree) return;
-          this._drawUnitLevelGroupConnectorPath(unitNode);
+          this._drawUnitLevelGroupConnectorPath(unitNode, unitOptions);
         });
         switch (currentLevelLayout) {
           case LevelLayout.TreeRight:
           case LevelLayout.TreeLeft:
           case LevelLayout.Tree:
-            this._drawUnitLevelTreeLeftRightConnectorPath(unitLevelGroup.units, currentLevelLayout);
+            this._drawUnitLevelGroupTreeLeftRightConnectorPath(unitLevelGroup.units, currentLevelLayout, levelGroupOptions);
             break;
           default:
-            this._drawUnitLevelConnectorPath(unitLevelGroup.units);
+            this._drawUnitLevelConnectorPath(unitLevelGroup.units, levelGroupOptions);
         }
       });
     });
   }
 
-  private _drawUnitLevelGroupConnectorPath(unit: UnitNodeInfo) {
+  private _drawUnitLevelGroupConnectorPath(unit: UnitNodeInfo, options) {
     const { x, y } = unit;
     if (unit.parent) {
       const dy = y - ((y - unit.parent.y) / 2);
-      const d = `M ${x}, ${y - unit.octagonAnchor.y - this.options.connectorOffset} V ${dy}`;
+      const d = `M ${x}, ${y - unit.octagonAnchor.y - options.connectorOffset} V ${dy}`;
       this.svg.append("path")
         .attr("d", d)
         .classed("o-line", true);
     }
   }
 
-  private _drawUnitLevelConnectorPath(unitLevelGroup: RenderedUnitNode[]) {
+  private _drawUnitLevelConnectorPath(unitLevelGroup: RenderedUnitNode[], options: OrbChartOptions) {
     let firstUnitInGroup = unitLevelGroup[0];
     let svg = this.svg;
     let parentUnit = firstUnitInGroup.parent;
@@ -447,7 +495,7 @@ class OrbatChart {
     let lastUnitInGroup = unitLevelGroup[unitLevelGroup.length - 1];
 
     const dy = firstUnitInGroup.y - ((firstUnitInGroup.y - parentUnit.y) / 2);
-    const d1 = `M ${parentUnit.x}, ${parentUnit.ly + this.options.connectorOffset} V ${dy}`;
+    const d1 = `M ${parentUnit.x}, ${parentUnit.ly + options.connectorOffset} V ${dy}`;
     svg.append("path")
       .attr("d", d1)
       .classed("o-line", true);
@@ -457,13 +505,13 @@ class OrbatChart {
       .classed("o-line", true);
   }
 
-  private _drawUnitLevelTreeLeftRightConnectorPath(unitLevelGroup: RenderedUnitNode[], levelLayout: LevelLayout) {
+  private _drawUnitLevelGroupTreeLeftRightConnectorPath(unitLevelGroup: RenderedUnitNode[], levelLayout: LevelLayout, options: OrbChartOptions) {
     let svg = this.svg;
     let lastUnitInGroup = unitLevelGroup[unitLevelGroup.length - 1];
     let parentUnit = lastUnitInGroup.parent as RenderedUnitNode;
     if (!parentUnit) return;
 
-    const d1 = `M ${parentUnit.x}, ${parentUnit.ly + this.options.connectorOffset} V ${lastUnitInGroup.y}`;
+    const d1 = `M ${parentUnit.x}, ${parentUnit.ly + options.connectorOffset} V ${lastUnitInGroup.y}`;
     svg.append("path")
       .attr("d", d1)
       .classed("o-line", true);
@@ -474,9 +522,9 @@ class OrbatChart {
       let d1;
       const delta = Math.abs(unit.boundingBox.width / 2 - maxWidth / 2);
       if (levelLayout === LevelLayout.TreeRight || levelLayout === LevelLayout.Tree && yIdx % 2)
-        d1 = `M ${unit.lx - delta - this.options.connectorOffset}, ${unit.y}  H ${parentUnit.x}`;
+        d1 = `M ${unit.lx - delta - options.connectorOffset}, ${unit.y}  H ${parentUnit.x}`;
       else
-        d1 = `M ${unit.rx + delta + this.options.connectorOffset}, ${unit.y}  H ${parentUnit.x}`;
+        d1 = `M ${unit.rx + delta + options.connectorOffset}, ${unit.y}  H ${parentUnit.x}`;
       svg.append("path")
         .attr("d", d1)
         .classed("o-line", true);

@@ -5,6 +5,17 @@ export type SVGElementSelection = Selection<SVGElement, any, any, any>;
 export type GElementSelection = Selection<SVGGElement, any, any, any>;
 export type RectElementSelection = Selection<SVGRectElement, any, any, any>;
 
+export interface DataMap<T> {
+  [key: string]: T;
+
+  [key: number]: T;
+}
+
+interface LevelMap {
+  [key: number]: PartialOptions;
+}
+
+
 export enum ChartOrientation {
   Top = "TOP",
   Bottom = "BOTTOM",
@@ -44,7 +55,12 @@ export interface Point {
   y: number;
 }
 
-export interface UnitNodeInfo {
+export interface BasicUnitNode {
+  unit: Unit;
+  parent?: BasicUnitNode;
+}
+
+export interface UnitNodeInfo extends BasicUnitNode {
   symbolBoxSize: Size;
   anchor: Point;
   octagonAnchor: Point;
@@ -77,6 +93,14 @@ export interface OrbChartOptions {
   stackedOffset: number;
 }
 
+export type PartialOptions = Partial<OrbChartOptions>;
+
+export interface SpecificOptions {
+  level?: LevelMap;
+  levelGroup?: DataMap<PartialOptions>;
+  unit?: DataMap<PartialOptions>;
+}
+
 export type UnitNodeVisitorCallback = (unit: Unit, level: number, parent: Unit | null) => void
 
 export interface Unit {
@@ -96,14 +120,17 @@ export interface RenderedChart extends RenderedElement {
 }
 
 export interface RenderedLevel extends RenderedElement {
-  unitGroups: RenderedLevelGroup[]
+  unitGroups: RenderedLevelGroup[];
+  options: Partial<OrbChartOptions>;
 }
 
 export interface RenderedLevelGroup extends RenderedElement {
-  units: RenderedUnitNode[]
+  units: RenderedUnitNode[];
+  options: Partial<OrbChartOptions>;
 }
 
 export interface RenderedUnitNode extends RenderedElement, UnitNodeInfo {
   boundingBox: DOMRect;
   parent?: RenderedUnitNode;
+  options: Partial<OrbChartOptions>;
 }
