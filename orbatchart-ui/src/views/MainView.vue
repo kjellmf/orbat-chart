@@ -16,6 +16,7 @@
         class="px-0 py-0 home"
         @unitclick="onUnitClick"
         v-bind="settings"
+        :specificOptions="specificOptions"
       />
     </v-flex>
   </v-layout>
@@ -28,7 +29,7 @@ import { mixins } from 'vue-class-component';
 import OrbatChart from "../components/OrbatChart.vue";
 import SlidePanel from "../components/SlidePanel.vue";
 import MilSymbol from "../components/MilSymbol.vue";
-import { ChartOrientation, OrbChartOptions, Unit } from "orbatchart";
+import { ChartOrientation, OrbChartOptions, SpecificOptions, Unit } from "orbatchart";
 
 import OrbatTree from "@/components/OrbatTree.vue";
 import { PanelMixins } from "@/components/mixins";
@@ -49,15 +50,19 @@ export default class MainView extends mixins(PanelMixins) {
   }
 
   get orbat(): Unit[] {
-    return this.$store.state.orbat;
+    return this.$store.state.orbat.rootUnits;
   }
 
   get currentUnit(): Unit {
-    return this.$store.state.currentUnit;
+    return this.$store.getters.currentUnit;
   }
 
   set currentUnit(unit: Unit) {
     this.$store.commit("setCurrentUnit", unit)
+  }
+
+  get specificOptions(): SpecificOptions {
+    return {};
   }
 
   onSlide() {

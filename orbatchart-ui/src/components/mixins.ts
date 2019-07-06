@@ -6,7 +6,7 @@ import { OrbChartOptions } from "orbatchart";
 export class PanelMixins extends Vue {
 
   get orbatPanel() {
-    return this.$store.state.orbatPanel;
+    return this.$store.state.ui.orbatPanel;
   }
 
   set orbatPanel(v) {
@@ -14,7 +14,7 @@ export class PanelMixins extends Vue {
   }
 
   get settingsPanel() {
-    return this.$store.state.settingsPanel;
+    return this.$store.state.ui.settingsPanel;
   }
 
   set settingsPanel(v) {
@@ -22,6 +22,6 @@ export class PanelMixins extends Vue {
   }
 
   get settings(): OrbChartOptions {
-    return this.$store.state.chartOptions;
+    return this.$store.state.chart.chartOptions;
   }
 }
