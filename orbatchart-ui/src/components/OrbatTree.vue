@@ -8,7 +8,15 @@
     <template slot="prepend" slot-scope="{ item, open, leaf }">
       <MilSymbol :sidc="item.sidc"/>
     </template>
-    <template slot="append" slot-scope="{ item }">
+    <template slot="append" slot-scope="{ item, active }">
+      <v-icon
+        v-if="active"
+        class="pr-3"
+        @click="setRootUnit(item)"
+        title="Set as root unit"
+      >
+        center_focus_strong
+      </v-icon>
       <v-icon v-if="item.id == currentUnitKey" class="pr-3">
         my_location
       </v-icon>
@@ -29,7 +37,7 @@ import { Unit } from "orbatchart";
 export default class OrbatTree extends Vue {
   @Prop()
   rootUnits!: Unit[];
-  currentUnitKey: string | number | null= null;
+  currentUnitKey: string | number | null = null;
 
   unitMap!: Map<string | number, Unit>;
 
@@ -41,8 +49,11 @@ export default class OrbatTree extends Vue {
 
   onUnitClick(unitKey: (string | number)[]) {
     if (!unitKey.length) return;
-    this.currentUnitKey = unitKey[0];
-    this.$emit("selectunit", this.unitMap.get(unitKey[0]));
+  }
+
+  setRootUnit(item: Unit) {
+    this.currentUnitKey = item.id;
+    this.$emit("selectunit", this.unitMap.get(item.id));
   }
 
   private buildUnitMap(units: Unit[]) {
