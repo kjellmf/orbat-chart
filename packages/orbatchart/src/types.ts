@@ -5,16 +5,15 @@ export type SVGElementSelection = Selection<SVGElement, any, any, any>;
 export type GElementSelection = Selection<SVGGElement, any, any, any>;
 export type RectElementSelection = Selection<SVGRectElement, any, any, any>;
 
-export interface DataMap<T> {
+export interface StringNumberMap<T> {
   [key: string]: T;
 
   [key: number]: T;
 }
 
-interface LevelMap {
-  [key: number]: PartialOptions;
+export interface NumberMap<T> {
+  [idx: number]: T;
 }
-
 
 export enum ChartOrientation {
   Top = "TOP",
@@ -93,12 +92,12 @@ export interface OrbChartOptions {
   stackedOffset: number;
 }
 
-export type PartialOptions = Partial<OrbChartOptions>;
+export type PartialOrbChartOptions = Partial<OrbChartOptions>;
 
 export interface SpecificOptions {
-  level?: LevelMap;
-  levelGroup?: DataMap<PartialOptions>;
-  unit?: DataMap<PartialOptions>;
+  level?: NumberMap<PartialOrbChartOptions>;
+  levelGroup?: StringNumberMap<PartialOrbChartOptions>;
+  unit?: StringNumberMap<PartialOrbChartOptions>;
 }
 
 export type UnitNodeVisitorCallback = (unit: Unit, level: number, parent: Unit | null) => void

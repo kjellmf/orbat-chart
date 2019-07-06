@@ -5,7 +5,7 @@ import {
   BasicUnitNode,
   GElementSelection,
   LevelLayout,
-  OrbChartOptions, PartialOptions,
+  OrbChartOptions,
   Point,
   RenderedChart,
   RenderedLevel,
