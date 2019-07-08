@@ -10,7 +10,7 @@ export class PanelMixins extends Vue {
   }
 
   set orbatPanel(v) {
-    this.$store.commit("setOrbatPanel", v);
+    if (this.orbatPanel !== v) this.$store.commit("setOrbatPanel", v);
   }
 
   get settingsPanel() {
@@ -18,7 +18,7 @@ export class PanelMixins extends Vue {
   }
 
   set settingsPanel(v) {
-    this.$store.commit("setSettingsPanel", v);
+    if (this.settingsPanel !== v) this.$store.commit("setSettingsPanel", v);
   }
 
   get settings(): OrbChartOptions {
