@@ -1,19 +1,18 @@
 import { GetterTree, Module, MutationTree } from "vuex";
 import { RootState } from "@/store/index";
 import {
-  DEFAULT_OPTIONS,
-  LevelLayout,
-  NumberMap,
-  OrbChartOptions,
-  PartialOrbChartOptions,
-  SpecificOptions, StringNumberMap
+  DEFAULT_OPTIONS, LevelGroupSpecificOptions,
+  LevelLayout, LevelSpecificOptions,
+  OrbChartOptions, PartialOrbChartOptions,
+  SpecificOptions, UnitSpcificOptions
 } from "orbatchart";
+import Vue from "vue";
 
 export interface ChartState {
-  chartOptions: Partial<OrbChartOptions>;
-  levelOptions: NumberMap<PartialOrbChartOptions>;
-  levelGroupOptions: StringNumberMap<PartialOrbChartOptions>;
-  unitOptions: StringNumberMap<PartialOrbChartOptions>;
+  chartOptions: PartialOrbChartOptions;
+  levelOptions: LevelSpecificOptions;
+  levelGroupOptions: LevelGroupSpecificOptions;
+  unitOptions: UnitSpcificOptions;
 }
 
 const state: ChartState = {
@@ -32,14 +31,49 @@ const state: ChartState = {
     "u0xGEGuOLzIcIirsioK0h": { symbolSize: 40 },
     "bJewqRWgkcxt3Lt53sz_c": { treeOffset: 60, symbolSize: 30, connectorOffset: 40 }
   }
-
    */
 };
+
+function mapHelper(entity: any, id, data: any) {
+  const oldObj = entity[id] || {};
+  const newObj = Object.assign({}, oldObj, data);
+  Vue.set(entity, id, newObj);
+}
+
 
 const mutations: MutationTree<ChartState> = {
   setChartOptions(state, value) {
     state.chartOptions = value;
+  },
+
+  updateChartOptions(state, value: PartialOrbChartOptions) {
+    state.chartOptions = Object.assign({}, state.chartOptions, value);
+  },
+
+  setLevelOptions(state, value: LevelSpecificOptions) {
+    state.levelOptions = value;
+  },
+
+  setLevelGroupOptions(state, value: LevelGroupSpecificOptions) {
+    state.levelGroupOptions = value;
+  },
+
+  setUnitOptions(state, value: UnitSpcificOptions) {
+    state.unitOptions = value;
+  },
+
+  updateLevelOptions(state, { id, value }) {
+    mapHelper(state.levelOptions, id, value)
+  },
+
+  updateLevelGroupOptions(state, { id, value }) {
+    mapHelper(state.levelGroupOptions, id, value)
+  },
+
+  updateUnitOptions(state, { id, value }) {
+    mapHelper(state.unitOptions, id, value)
   }
+
 };
 
 const getters: GetterTree<ChartState, RootState> = {

@@ -6,41 +6,48 @@
       </template>
       <div class="pa-3">
         <v-text-field
-          v-model.number="settings.maxLevels"
+          :value="settings.maxLevels"
+          @input="updateNum('maxLevels', $event)"
           type="number"
           label="Visible levels"
         />
         <v-text-field
           label="Symbol size"
           type="number" min="5"
-          v-model.number="settings.symbolSize"
+          :value="settings.symbolSize"
+          @input="updateNum('symbolSize', $event)"
         />
         <v-text-field
           label="Connector offset"
           type="number" min="0"
-          v-model.number="settings.connectorOffset"
+          :value="settings.connectorOffset"
+          @input="updateNum('connectorOffset', $event)"
         />
         <v-text-field
           label="Level padding"
           type="number" min="0"
-          v-model.number="settings.levelPadding"
+          :value="settings.levelPadding"
+          @input="updateNum('levelPadding', $event)"
         />
         <v-text-field
           :disabled="noTreeOffset"
           label="Tree offset"
           type="number" min="0"
-          v-model.number="settings.treeOffset"
+          :value="settings.treeOffset"
+          @input="updateNum('treeOffset', $event)"
         />
         <v-text-field
           :disabled="noStackedTreeOffset"
           label="Stacked offset"
           type="number" min="0"
-          v-model.number="settings.stackedOffset"
+          :value="settings.stackedOffset"
+          @input="updateNum('stackedOffset', $event)"
         />
         <v-select
           label="Unit spacing"
           :items="unitLevelDistance"
-          v-model="settings.unitLevelDistance"
+          :value="settings.unitLevelDistance"
+          @input="updateVal('unitLevelDistance', $event)"
         />
         <!--<v-select
           disabled
@@ -51,12 +58,14 @@
         <v-select
           label="Last level layout"
           :items="lastLevelLayout"
-          v-model="settings.lastLevelLayout"
+          :value="settings.lastLevelLayout"
+          @input="updateVal('lastLevelLayout', $event)"
         />
 
         <v-checkbox
           label="Debug mode"
-          v-model="settings.debug"
+          :value="settings.debug"
+          @change="updateVal('debug', $event)"
         />
       </div>
     </v-expansion-panel-content>
@@ -94,6 +103,7 @@ function getMap(myEnum) {
     return { text: key, value }
   });
 }
+
 @Component({
   components: { SettingsUnit }
 })
@@ -116,6 +126,14 @@ export default class SettingsPanel extends mixins(PanelMixins) {
 
   get noStackedTreeOffset() {
     return !isStackedTreeLayout(this.settings.lastLevelLayout);
+  }
+
+  updateNum(prop, value) {
+    this.$store.commit("updateChartOptions", { [prop]: +value });
+  }
+
+  updateVal(prop, value) {
+    this.$store.commit("updateChartOptions", { [prop]: value });
   }
 };
 
