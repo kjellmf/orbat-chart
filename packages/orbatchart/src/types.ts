@@ -93,11 +93,14 @@ export interface OrbChartOptions {
 }
 
 export type PartialOrbChartOptions = Partial<OrbChartOptions>;
+export type LevelSpecificOptions = NumberMap<PartialOrbChartOptions>;
+export type LevelGroupSpecificOptions = StringNumberMap<PartialOrbChartOptions>;
+export type UnitSpcificOptions = StringNumberMap<PartialOrbChartOptions>;
 
 export interface SpecificOptions {
-  level?: NumberMap<PartialOrbChartOptions>;
-  levelGroup?: StringNumberMap<PartialOrbChartOptions>;
-  unit?: StringNumberMap<PartialOrbChartOptions>;
+  level?: LevelSpecificOptions;
+  levelGroup?: LevelGroupSpecificOptions;
+  unit?: UnitSpcificOptions;
 }
 
 export type UnitNodeVisitorCallback = (unit: Unit, level: number, parent: Unit | null) => void

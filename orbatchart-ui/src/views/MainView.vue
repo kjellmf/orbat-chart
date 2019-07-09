@@ -62,7 +62,7 @@ export default class MainView extends mixins(PanelMixins) {
   }
 
   get specificOptions(): SpecificOptions {
-    return {};
+    return this.$store.getters.specificOptions;
   }
 
   onSlide() {
