@@ -19,5 +19,6 @@ export const DEFAULT_OPTIONS = {
   levelPadding: 175,
   treeOffset: TREE_LEFT_RIGHT_OFFSET,
   stackedOffset: STACKED_OFFSET,
+  lineWidth: 1,
 } as OrbChartOptions;
 

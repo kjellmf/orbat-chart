@@ -44,6 +44,12 @@
           :value="settings.stackedOffset"
           @input="updateNum('stackedOffset', $event)"
         />
+        <v-text-field
+          label="Line width"
+          type="number" min="0"
+          :value="settings.lineWidth"
+          @input="updateNum('lineWidth', $event)"
+        />
         <v-select
           label="Unit spacing"
           :items="unitLevelDistance"

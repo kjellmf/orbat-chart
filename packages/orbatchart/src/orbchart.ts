@@ -6,7 +6,6 @@ import {
   GElementSelection,
   LevelLayout,
   OrbChartOptions,
-  Point,
   RenderedChart,
   RenderedLevel,
   RenderedUnitNode,
@@ -19,10 +18,11 @@ import {
 } from "./types";
 import { DEFAULT_CHART_HEIGHT, DEFAULT_CHART_WIDTH, DEFAULT_OPTIONS, MARGIN_TOP, } from "./defaults";
 
-const CHART_STYLE = `
+function createChartStyle(options: OrbChartOptions) {
+  return `
 .o-line {
   stroke: black;
-  stroke-width: 1pt;
+  stroke-width: ${options.lineWidth}pt;
   fill:none;
 }
 
@@ -33,26 +33,7 @@ const CHART_STYLE = `
 .o-unit:hover {
   font-weight: bold;
 }
-`;
-
-function createUnitNodeInfo(unit: Unit, options: Partial<OrbChartOptions>): UnitNodeInfo {
-  let symb: Symbol;
-  const symbolOptions = { size: options.symbolSize };
-  if (options.symbolGenerator) {
-    symb = options.symbolGenerator(unit.sidc, symbolOptions);
-  } else {
-    symb = new Symbol(
-      unit.sidc,
-      symbolOptions,
-      // {uniqueDesignation: node.shortName || node.name},
-    );
-  }
-  const size: Size = symb.getSize();
-  const anchor: Point = symb.getAnchor();
-  const octagonAnchor: Point = symb.getOctagonAnchor();
-  return {
-    symbolBoxSize: size, anchor, octagonAnchor, symb, unit: unit, x: 0, y: 0, ly: 0, lx: 0, rx: 0
-  };
+`
 }
 
 function convertBasicUnitNode2UnitNodeInfo(basicUnitNode: BasicUnitNode, options: Partial<OrbChartOptions>): UnitNodeInfo {
@@ -219,7 +200,7 @@ class OrbatChart {
       .attr("viewBox", `0 0 ${this.width} ${this.height}`)
       .attr("class", "orbat-chart");
 
-    svg.append("style").text(CHART_STYLE);
+    svg.append("style").text(createChartStyle(this.options));
     svg.attr("width", "100%");
     svg.attr("height", "100%");
     if (this.options.debug) {

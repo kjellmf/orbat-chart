@@ -19,6 +19,7 @@ export default Vue.extend({
     levelPadding: { type: Number, default: DEFAULT_OPTIONS.levelPadding },
     treeOffset: { type: Number, default: DEFAULT_OPTIONS.treeOffset },
     stackedOffset: { type: Number, default: DEFAULT_OPTIONS.stackedOffset },
+    lineWidth: { type: Number, default: DEFAULT_OPTIONS.lineWidth },
     specificOptions: {type: Object},
   },
 
@@ -73,6 +74,7 @@ export default Vue.extend({
       levelPadding: this.levelPadding,
       treeOffset: this.treeOffset,
       stackedOffset: this.stackedOffset,
+      lineWidth: this.lineWidth,
     }, this.specificOptions || {});
     this.orbchart = orbchart;
     if (this.isMounted) {

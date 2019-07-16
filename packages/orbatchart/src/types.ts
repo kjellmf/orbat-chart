@@ -90,6 +90,7 @@ export interface OrbChartOptions {
   levelPadding: number;
   treeOffset: number;
   stackedOffset: number;
+  lineWidth: number;
 }
 
 export type PartialOrbChartOptions = Partial<OrbChartOptions>;
