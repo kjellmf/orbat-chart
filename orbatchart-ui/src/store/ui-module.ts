@@ -4,11 +4,13 @@ import { RootState } from "@/store/index";
 export interface UIState {
   orbatPanel: boolean;
   settingsPanel: boolean;
+  interactiveChart: boolean;
 }
 
 const state: UIState = {
   orbatPanel: true,
-  settingsPanel: true
+  settingsPanel: true,
+  interactiveChart: false,
 };
 
 const mutations: MutationTree<UIState> = {
@@ -19,6 +21,10 @@ const mutations: MutationTree<UIState> = {
   setSettingsPanel(state, value) {
     state.settingsPanel = value;
   },
+
+  setInteractiveChart(state, value) {
+    state.interactiveChart = value;
+  }
 };
 
 export default {

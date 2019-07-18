@@ -7,7 +7,7 @@ import {
   LevelLayout,
   OrbChartOptions,
   RenderedChart,
-  RenderedLevel,
+  RenderedLevel, RenderedLevelGroup,
   RenderedUnitNode,
   Size, SpecificOptions,
   SVGElementSelection,
@@ -17,6 +17,28 @@ import {
   VerticalAlignment
 } from "./types";
 import { DEFAULT_CHART_HEIGHT, DEFAULT_CHART_WIDTH, DEFAULT_OPTIONS, MARGIN_TOP, } from "./defaults";
+
+// language=CSS format=false
+const HIGHLIGT_STYLE = `
+
+  .o-unit:hover {
+    stroke: red;
+    fill: blue;
+  }
+
+  .highlight {
+    stroke: gray;
+    stroke-dasharray: 5, 5;
+    fill: white;
+    fill-opacity: 0;
+  }
+
+  .highlight:hover {
+    stroke: red;
+    stroke-width: 2pt;
+    fill: #ccc;
+  }
+`;
 
 function createChartStyle(options: OrbChartOptions) {
   return `
@@ -30,9 +52,7 @@ function createChartStyle(options: OrbChartOptions) {
   text-anchor: middle;
 }
 
-.o-unit:hover {
-  font-weight: bold;
-}
+${HIGHLIGT_STYLE}
 `
 }
 
@@ -68,9 +88,13 @@ function putGroupAt(g: GElementSelection, node: UnitNodeInfo, x: number, y: numb
   return g.attr("transform", `translate(${dx}, ${dy})`);
 }
 
-function createGroupElement(parentElement, className: string): GElementSelection {
-  return parentElement.append("g")
+function createGroupElement(parentElement, className: string, id = ""): GElementSelection {
+  let el = parentElement.append("g")
     .attr("class", className);
+  if (id) {
+    el.attr("id", id);
+  }
+  return el;
 }
 
 function drawDebugRect(groupElement: GElementSelection, fill = "#ccc") {
@@ -166,6 +190,7 @@ class OrbatChart {
   options: OrbChartOptions;
   groupedLevels: BasicUnitNode[][][] = [];
   svg!: SVGElementSelection;
+  renderedChart!: RenderedChart;
 
   constructor(private rootNode: Unit, options: Partial<OrbChartOptions> = {}, private specificOptions: SpecificOptions) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
@@ -175,9 +200,13 @@ class OrbatChart {
   cleanup() {
     // Remove event listeners
     if (this.svg) {
-      let unitGroups = this.svg.selectAll("g.o-unit");
-      unitGroups.on("click", null);
+      this.svg.selectAll("g.o-unit").on("click", null);
+      this._removeSelectEventListeners();
     }
+  }
+
+  private _removeSelectEventListeners() {
+    this.svg.selectAll(".select-rect").on("click", null);
   }
 
   toSVG(size: Partial<Size>, parentElement: HTMLElement): Element {
@@ -191,7 +220,45 @@ class OrbatChart {
     renderedChart.levels = this._createInitialNodeStructure(this.svg, this.groupedLevels);
     this._doNodeLayout(renderedChart);
     this._drawConnectors(renderedChart);
+    this.renderedChart = renderedChart;
     return this.svg.node() as Element;
+  }
+
+  highlightLevel(levelNumber: number) {
+    let layer = select("#o-highlight-layer");
+    let groupElement = select(`#o-level-${levelNumber}`) as GElementSelection;
+    const bbox = groupElement.node()!.getBBox();
+    let offset = 20;
+    let tmp = layer.append("rect")
+      .attr("x", bbox.x - offset * 2)
+      .attr("y", bbox.y - offset)
+      .attr("width", bbox.width + 4 * offset)
+      .attr("height", bbox.height + 2 * offset)
+      .attr("class", "highlight select-rect");
+
+    if (this.options.onLevelClick) {
+      tmp.on("click", (e) => {
+        this.options.onLevelClick(levelNumber);
+      });
+    }
+  }
+
+  highlightGroup(renderedLevelGroup: RenderedLevelGroup) {
+    let layer = select("#o-highlight-layer");
+    let groupElement = renderedLevelGroup.groupElement;
+    const bbox = groupElement.node()!.getBBox();
+    let offset = 10;
+    let tmp = layer.append("rect")
+      .attr("x", bbox.x - offset * 2)
+      .attr("y", bbox.y - offset)
+      .attr("width", bbox.width + 4 * offset)
+      .attr("height", bbox.height + 2 * offset)
+      .attr("class", "highlight select-rect");
+    if (this.options.onLevelGroupClick) {
+      tmp.on("click", (e) => {
+        this.options.onLevelGroupClick(renderedLevelGroup.units[0].parent!.unit.id || 0);
+      });
+    }
   }
 
   private _createSvgElement(parentElement: HTMLElement): RenderedChart {
@@ -212,6 +279,7 @@ class OrbatChart {
         .attr("width", this.width)
         .attr("height", this.height);
     }
+    createGroupElement(svg, "", "o-highlight-layer");
     this.svg = svg;
     return { groupElement: <unknown>svg as GElementSelection, levels: [] }
   }
@@ -263,7 +331,8 @@ class OrbatChart {
       if (this.specificOptions.level && this.specificOptions.level[yIdx]) {
         levelSpecificOptions = this.specificOptions.level[yIdx] || {};
       }
-      let levelGElement = createGroupElement(parentElement, "o-level");
+      let levelGElement = createGroupElement(parentElement, "o-level", `o-level-${yIdx}`);
+
       let renderedLevel: RenderedLevel = {
         groupElement: levelGElement, unitGroups: [], options: levelSpecificOptions
       };
@@ -278,7 +347,8 @@ class OrbatChart {
           lgSpecificOptions = this.specificOptions.levelGroup[parent.unit.id] || {};
         }
         let levelGroupOptions = { ...levelOptions, ...lgSpecificOptions };
-        let levelGroupGElement = createGroupElement(levelGElement, "o-level-group");
+        let levelGroupId = `o-level-group-${parent ? parent.unit.id : 0}`;
+        let levelGroupGElement = createGroupElement(levelGElement, "o-level-group", levelGroupId);
         const units = unitLevelGroup.map(unitNode => {
           let unitSpecificOptions = this.specificOptions && this.specificOptions.unit ? this.specificOptions.unit[unitNode.unit.id] || {} : {};
           let unitOptions = { ...levelGroupOptions, ...unitSpecificOptions };
@@ -311,6 +381,7 @@ class OrbatChart {
       if (yIdx === maxLevels - 1) levelLayout = this.options.lastLevelLayout;
       this._renderLevel(renderedLevel, y, levelLayout);
     });
+
   }
 
   private _renderLevel(renderedLevel: RenderedLevel, y: number, levelLayout: LevelLayout = LevelLayout.Horizontal) {
@@ -398,8 +469,6 @@ class OrbatChart {
         }
         if (levelGroupOptions.debug) drawDebugRect(unitLevelGroup.groupElement, "yellow");
       });
-
-
     }
 
     function _doStackedLayout(layout: LevelLayout) {
@@ -510,7 +579,24 @@ class OrbatChart {
         .attr("d", d1)
         .classed("o-line", true);
     }
+  }
 
+  public makeInteractive() {
+    this._addSelectionLayer(this.renderedChart);
+  }
+
+  private _addSelectionLayer(renderedChart: RenderedChart) {
+    renderedChart.levels.forEach((level, index) => {
+      this.highlightLevel(index);
+      level.unitGroups.forEach(levelGroup => {
+        this.highlightGroup(levelGroup);
+      })
+    })
+  }
+
+  public removeSelectionLayer() {
+    this._removeSelectEventListeners();
+    this.svg.selectAll("#o-highlight-layer rect").remove();
   }
 }
 

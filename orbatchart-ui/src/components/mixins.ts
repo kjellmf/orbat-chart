@@ -24,4 +24,12 @@ export class PanelMixins extends Vue {
   get settings(): OrbChartOptions {
     return this.$store.state.chart.chartOptions;
   }
+
+  get interactiveChart(): boolean {
+    return this.$store.state.ui.interactiveChart;
+  }
+
+  set interactiveChart(v) {
+    if (this.interactiveChart !== v) this.$store.commit('setInteractiveChart', v);
+  }
 }

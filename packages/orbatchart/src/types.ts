@@ -73,14 +73,18 @@ export interface UnitNodeInfo extends BasicUnitNode {
   rx: number;
 }
 
-export type OnClickCallback = (unit: Unit) => void;
+export type OnUnitClickCallback = (unit: Unit) => void;
+export type OnLevelClickCallback = (levelNumber: number) => void;
+export type OnLevelGroupClickCallback = (parentId: string | number) => void;
 export type SymbolGenerator = (sidc: string, options: SymbolOptions) => Symbol;
 
 export interface OrbChartOptions {
   symbolSize: number;
   maxLevels: number;
   debug: boolean;
-  onClick: OnClickCallback;
+  onClick: OnUnitClickCallback;
+  onLevelClick: OnLevelClickCallback;
+  onLevelGroupClick: OnLevelGroupClickCallback;
   connectorOffset: number;
   symbolGenerator: SymbolGenerator;
   orientation: ChartOrientation;
@@ -96,12 +100,12 @@ export interface OrbChartOptions {
 export type PartialOrbChartOptions = Partial<OrbChartOptions>;
 export type LevelSpecificOptions = NumberMap<PartialOrbChartOptions>;
 export type LevelGroupSpecificOptions = StringNumberMap<PartialOrbChartOptions>;
-export type UnitSpcificOptions = StringNumberMap<PartialOrbChartOptions>;
+export type UnitSpecificOptions = StringNumberMap<PartialOrbChartOptions>;
 
 export interface SpecificOptions {
   level?: LevelSpecificOptions;
   levelGroup?: LevelGroupSpecificOptions;
-  unit?: UnitSpcificOptions;
+  unit?: UnitSpecificOptions;
 }
 
 export type UnitNodeVisitorCallback = (unit: Unit, level: number, parent: Unit | null) => void

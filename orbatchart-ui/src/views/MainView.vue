@@ -15,8 +15,11 @@
         :unit="currentUnit"
         class="px-0 py-0 home"
         @unitclick="onUnitClick"
+        @levelclick="onLevelClick"
+        @levelgroupclick="onLevelGroupClick"
         v-bind="settings"
         :specificOptions="specificOptions"
+        :interactive="interactiveChart"
       />
     </v-flex>
   </v-layout>
@@ -72,6 +75,14 @@ export default class MainView extends mixins(PanelMixins) {
 
   onUnitClick(unit) {
     console.log("Clicked", unit.unit.name);
+  };
+
+  onLevelClick(levelNumber) {
+    console.log("Clicked level", levelNumber);
+  };
+
+  onLevelGroupClick(id) {
+    console.log("Clicked level group", id);
   }
 
   onSelectUnit(unit: Unit) {

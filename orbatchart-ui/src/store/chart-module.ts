@@ -4,7 +4,7 @@ import {
   DEFAULT_OPTIONS, LevelGroupSpecificOptions,
   LevelLayout, LevelSpecificOptions,
   OrbChartOptions, PartialOrbChartOptions,
-  SpecificOptions, UnitSpcificOptions
+  SpecificOptions, UnitSpecificOptions
 } from "orbatchart";
 import Vue from "vue";
 
@@ -12,7 +12,7 @@ export interface ChartState {
   chartOptions: PartialOrbChartOptions;
   levelOptions: LevelSpecificOptions;
   levelGroupOptions: LevelGroupSpecificOptions;
-  unitOptions: UnitSpcificOptions;
+  unitOptions: UnitSpecificOptions;
 }
 
 const state: ChartState = {
@@ -58,7 +58,7 @@ const mutations: MutationTree<ChartState> = {
     state.levelGroupOptions = value;
   },
 
-  setUnitOptions(state, value: UnitSpcificOptions) {
+  setUnitOptions(state, value: UnitSpecificOptions) {
     state.unitOptions = value;
   },
 

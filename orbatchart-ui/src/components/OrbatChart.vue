@@ -20,7 +20,8 @@ export default Vue.extend({
     treeOffset: { type: Number, default: DEFAULT_OPTIONS.treeOffset },
     stackedOffset: { type: Number, default: DEFAULT_OPTIONS.stackedOffset },
     lineWidth: { type: Number, default: DEFAULT_OPTIONS.lineWidth },
-    specificOptions: {type: Object},
+    specificOptions: { type: Object },
+    interactive: {type: Boolean, default:true},
   },
 
   data: () => ({
@@ -55,7 +56,16 @@ export default Vue.extend({
 
     onClick(unit) {
       this.$emit("unitclick", unit);
+    },
+
+    onLevelClick(levelNumber) {
+      this.$emit("levelclick", levelNumber);
+    },
+
+    onLevelGroupClick(parentId) {
+      this.$emit("levelgroupclick", parentId);
     }
+
   },
 
   render(h) {
@@ -67,6 +77,8 @@ export default Vue.extend({
       debug: this.debug,
       symbolSize: this.symbolSize,
       onClick: this.onClick,
+      onLevelClick: this.onLevelClick,
+      onLevelGroupClick: this.onLevelGroupClick,
       connectorOffset: this.connectorOffset,
       orientation: this.orientation,
       unitLevelDistance: this.unitLevelDistance,
@@ -79,6 +91,7 @@ export default Vue.extend({
     this.orbchart = orbchart;
     if (this.isMounted) {
       let svg = orbchart.toSVG({ width: 1920, height: 1080 }, this.$el);
+      if (this.interactive) orbchart.makeInteractive();
     }
 
     return h("div", {

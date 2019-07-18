@@ -74,6 +74,11 @@
           :value="settings.debug"
           @change="updateVal('debug', $event)"
         />
+
+        <v-checkbox
+          label="Select mode"
+          v-model="interactiveChart"
+        />
       </div>
     </v-tab-item>
     <v-tab-item>
