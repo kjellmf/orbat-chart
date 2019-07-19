@@ -82,10 +82,14 @@
       </div>
     </v-tab-item>
     <v-tab-item>
-      <div class="pa-3"></div>
+      <div class="pa-3">
+        <SettingsLevel/>
+      </div>
     </v-tab-item>
     <v-tab-item>
-      <div class="pa-3"></div>
+      <div class="pa-3">
+        <SettingsLevelGroup/>
+      </div>
     </v-tab-item>
     <v-tab-item>
       <div class="pa-3">
@@ -100,6 +104,8 @@ import { PanelMixins } from "@/components/mixins";
 import { mixins } from "vue-class-component";
 import { Component } from "vue-property-decorator";
 import SettingsUnit from "@/components/SettingsUnit.vue";
+import SettingsLevel from "@/components/SettingsLevel.vue";
+import SettingsLevelGroup from "@/components/SettingsLevelGroup.vue";
 
 function getMap(myEnum) {
   return Object.entries(myEnum).map(([key, value]) => {
@@ -108,7 +114,7 @@ function getMap(myEnum) {
 }
 
 @Component({
-  components: { SettingsUnit }
+  components: { SettingsLevelGroup, SettingsLevel, SettingsUnit }
 })
 export default class SettingsPanel extends mixins(PanelMixins) {
   active = 0;
