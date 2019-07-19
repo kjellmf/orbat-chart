@@ -37,6 +37,7 @@ import { ChartOrientation, OrbChartOptions, SpecificOptions, Unit } from "orbatc
 import OrbatTree from "@/components/OrbatTree.vue";
 import { PanelMixins } from "@/components/mixins";
 import SettingsPanel from "@/components/SettingsPanel.vue";
+import { EventBus, LEVEL_CLICK, LEVELGROUP_CLICK, UNIT_CLICK } from "@/eventbus";
 
 @Component({
   components: {
@@ -78,14 +79,15 @@ export default class MainView extends mixins(PanelMixins) {
   };
 
   onLevelClick(levelNumber) {
-    console.log("Clicked level", levelNumber);
+    EventBus.$emit(LEVEL_CLICK, levelNumber);
   };
 
   onLevelGroupClick(id) {
-    console.log("Clicked level group", id);
+    EventBus.$emit(LEVELGROUP_CLICK, id);
   }
 
   onSelectUnit(unit: Unit) {
+    EventBus.$emit(UNIT_CLICK, unit);
     this.currentUnit = unit;
   }
 }
