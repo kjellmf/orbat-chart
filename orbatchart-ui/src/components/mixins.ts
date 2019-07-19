@@ -3,6 +3,17 @@ import Component from 'vue-class-component'
 import { OrbChartOptions } from "orbatchart";
 
 @Component
+export class SettingsPanelMixins extends Vue {
+  get activeSettingsPanel() {
+    return this.$store.state.ui.activeSettingsPanel;
+  }
+
+  set activeSettingsPanel(value) {
+    if (this.activeSettingsPanel !== value) this.$store.commit("setActiveSettingsPanel", value);
+  }
+}
+
+@Component
 export class PanelMixins extends Vue {
 
   get orbatPanel() {
@@ -32,4 +43,5 @@ export class PanelMixins extends Vue {
   set interactiveChart(v) {
     if (this.interactiveChart !== v) this.$store.commit('setInteractiveChart', v);
   }
+
 }

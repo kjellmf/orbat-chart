@@ -1,5 +1,5 @@
 <template>
-  <v-tabs v-model="active" centered>
+  <v-tabs v-model="activeSettingsPanel" centered>
     <v-tab href="#">Chart</v-tab>
     <v-tab href="#">Level</v-tab>
     <v-tab href="#">Group</v-tab>
@@ -100,7 +100,7 @@
 </template>
 <script lang="ts">
 import { ChartOrientation, LevelLayout, UnitLevelDistance, isTreeLayout, isStackedTreeLayout } from "orbatchart";
-import { PanelMixins } from "@/components/mixins";
+import { PanelMixins, SettingsPanelMixins } from "@/components/mixins";
 import { mixins } from "vue-class-component";
 import { Component } from "vue-property-decorator";
 import SettingsUnit from "@/components/SettingsUnit.vue";
@@ -116,9 +116,7 @@ function getMap(myEnum) {
 @Component({
   components: { SettingsLevelGroup, SettingsLevel, SettingsUnit }
 })
-export default class SettingsPanel extends mixins(PanelMixins) {
-  active = 0;
-
+export default class SettingsPanel extends mixins(PanelMixins, SettingsPanelMixins) {
   get orientation() {
     return getMap(ChartOrientation);
   }

@@ -5,12 +5,14 @@ export interface UIState {
   orbatPanel: boolean;
   settingsPanel: boolean;
   interactiveChart: boolean;
+  activeSettingsPanel: number;
 }
 
 const state: UIState = {
   orbatPanel: true,
   settingsPanel: true,
-  interactiveChart: false,
+  interactiveChart: true,
+  activeSettingsPanel: 0,
 };
 
 const mutations: MutationTree<UIState> = {
@@ -24,6 +26,10 @@ const mutations: MutationTree<UIState> = {
 
   setInteractiveChart(state, value) {
     state.interactiveChart = value;
+  },
+
+  setActiveSettingsPanel(state, value) {
+    state.activeSettingsPanel = value;
   }
 };
 
