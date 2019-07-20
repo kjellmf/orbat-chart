@@ -2,7 +2,7 @@ import { ChartOrientation, LevelLayout, OrbChartOptions, UnitLevelDistance, Vert
 
 export const DEFAULT_CHART_WIDTH = 600;
 export const DEFAULT_CHART_HEIGHT = 600;
-export const TREE_LEFT_RIGHT_OFFSET = 40;
+export const TREE_LEFT_RIGHT_OFFSET = 50;
 export const STACKED_OFFSET = 50;
 export const MARGIN_TOP = 100;
 
