@@ -21,7 +21,8 @@ export default Vue.extend({
     stackedOffset: { type: Number, default: DEFAULT_OPTIONS.stackedOffset },
     lineWidth: { type: Number, default: DEFAULT_OPTIONS.lineWidth },
     specificOptions: { type: Object },
-    interactive: {type: Boolean, default:true},
+    interactive: { type: Boolean, default: true },
+    highlightedLevels: { type: Array, default: () => [] },
   },
 
   data: () => ({
@@ -46,6 +47,12 @@ export default Vue.extend({
     }
   },
 
+  watch: {
+    highlightedLevels(value) {
+      this.handleLevelHighlight(value);
+    },
+  },
+
   methods: {
     onResize() {
       clearTimeout(this.resizeTimeout);
@@ -64,6 +71,10 @@ export default Vue.extend({
 
     onLevelGroupClick(parentId) {
       this.$emit("levelgroupclick", parentId);
+    },
+
+    handleLevelHighlight(value) {
+      this.orbchart.highlightLevels([... value]);
     }
 
   },

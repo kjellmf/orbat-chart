@@ -6,6 +6,8 @@ export interface UIState {
   settingsPanel: boolean;
   interactiveChart: boolean;
   activeSettingsPanel: number;
+  highlightedLevels: number[];
+  highlightedLevelGroups: string[] | number[];
 }
 
 const state: UIState = {
@@ -13,6 +15,8 @@ const state: UIState = {
   settingsPanel: true,
   interactiveChart: true,
   activeSettingsPanel: 0,
+  highlightedLevels: [],
+  highlightedLevelGroups: [],
 };
 
 const mutations: MutationTree<UIState> = {
@@ -30,6 +34,14 @@ const mutations: MutationTree<UIState> = {
 
   setActiveSettingsPanel(state, value) {
     state.activeSettingsPanel = value;
+  },
+
+  setHighlightedLevels(state, value) {
+    state.highlightedLevels = value;
+  },
+
+  setHighligtedLevelGroups(state, value) {
+    state.highlightedLevelGroups = value;
   }
 };
 

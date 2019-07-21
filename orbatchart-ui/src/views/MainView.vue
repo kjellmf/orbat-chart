@@ -20,6 +20,7 @@
         v-bind="settings"
         :specificOptions="specificOptions"
         :interactive="interactiveChart"
+        :highlightedLevels="highlightedLevels"
       />
     </v-flex>
   </v-layout>
@@ -35,7 +36,7 @@ import MilSymbol from "../components/MilSymbol.vue";
 import { ChartOrientation, OrbChartOptions, SpecificOptions, Unit } from "orbatchart";
 
 import OrbatTree from "@/components/OrbatTree.vue";
-import { PanelMixins } from "@/components/mixins";
+import { PanelMixins, SettingsPanelMixins } from "@/components/mixins";
 import SettingsPanel from "@/components/SettingsPanel.vue";
 import { EventBus, LEVEL_CLICK, LEVELGROUP_CLICK, UNIT_CLICK } from "@/eventbus";
 
@@ -48,7 +49,7 @@ import { EventBus, LEVEL_CLICK, LEVELGROUP_CLICK, UNIT_CLICK } from "@/eventbus"
     MilSymbol,
   },
 })
-export default class MainView extends mixins(PanelMixins) {
+export default class MainView extends mixins(PanelMixins, SettingsPanelMixins) {
   created() {
     this.currentUnit = this.orbat[0];
   }

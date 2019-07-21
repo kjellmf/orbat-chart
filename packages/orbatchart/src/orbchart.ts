@@ -598,6 +598,10 @@ class OrbatChart {
     this._removeSelectEventListeners();
     this.svg.selectAll("#o-highlight-layer rect").remove();
   }
+
+  public highlightLevels(levelIndexes: number[]) {
+    console.log("Not implemented yet", levelIndexes);
+  }
 }
 
 export { OrbatChart };

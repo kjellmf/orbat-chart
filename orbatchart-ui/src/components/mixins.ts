@@ -11,6 +11,16 @@ export class SettingsPanelMixins extends Vue {
   set activeSettingsPanel(value) {
     if (this.activeSettingsPanel !== value) this.$store.commit("setActiveSettingsPanel", value);
   }
+
+  get highlightedLevels(): number[] {
+    return this.$store.state.ui.highlightedLevels;
+  }
+
+  set highlightedLevels(value: number[]) {
+    if (this.highlightedLevels !== value) this.$store.commit("setHighlightedLevels", value);
+  }
+
+
 }
 
 @Component
