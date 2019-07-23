@@ -11,7 +11,6 @@ import { mixins } from "vue-class-component";
 export default class SettingsLevelGroup extends mixins(SettingsPanelMixins) {
   mounted() {
     EventBus.$on(LEVELGROUP_CLICK, parentId => {
-      console.log("On another Level group", parentId);
       this.activeSettingsPanel = 2;
     })
   }

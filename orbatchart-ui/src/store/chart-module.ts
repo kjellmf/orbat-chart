@@ -22,7 +22,11 @@ const state: ChartState = {
     lastLevelLayout: LevelLayout.TreeRight
   },
   levelGroupOptions: {},
-  levelOptions: {},
+  levelOptions: {
+    3: { levelPadding: 10, symbolSize: 25 },
+    2: { symbolSize: 40 },
+    1: { symbolSize: 40 }
+  },
   unitOptions: {}
   /*
   levelOptions: { 1: { symbolSize: 50, debug: true, connectorOffset: 33 } },
@@ -63,7 +67,8 @@ const mutations: MutationTree<ChartState> = {
   },
 
   updateLevelOptions(state, { id, value }) {
-    mapHelper(state.levelOptions, id, value)
+    Vue.set(state.levelOptions, id, value);
+    //mapHelper(state.levelOptions, id, value)
   },
 
   updateLevelGroupOptions(state, { id, value }) {
@@ -72,6 +77,10 @@ const mutations: MutationTree<ChartState> = {
 
   updateUnitOptions(state, { id, value }) {
     mapHelper(state.unitOptions, id, value)
+  },
+
+  clearLevelOptions(state, id) {
+    Vue.delete(state.levelOptions, id);
   }
 
 };
@@ -79,7 +88,9 @@ const mutations: MutationTree<ChartState> = {
 const getters: GetterTree<ChartState, RootState> = {
   specificOptions: (state): SpecificOptions => {
     return { level: state.levelOptions, levelGroup: state.levelGroupOptions, unit: state.unitOptions }
-  }
+  },
+
+  levels: (state) => Object.keys(state.levelOptions)
 };
 
 export default {
