@@ -15,10 +15,10 @@
         @click="setRootUnit(item)"
         title="Set as root unit"
       >
-        center_focus_strong
+        mdi-image-filter-center-focus-strong
       </v-icon>
       <v-icon v-if="item.id == currentUnitKey" class="pr-3">
-        my_location
+        mdi-crosshairs-gps
       </v-icon>
     </template>
   </v-treeview>

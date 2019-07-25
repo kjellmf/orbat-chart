@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <v-list dense>
-      <v-list-tile
+      <v-list-item
         v-for="item in items"
         :key="item.id"
         @click="selectLevel(item)"
@@ -9,22 +9,22 @@
         :active="item.id == currentLevelIndex"
         href="#"
       >
-        <v-list-tile-action>
-          <v-icon v-if="item.id == currentLevelIndex" color="pink">star</v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title v-text="item.title"></v-list-tile-title>
-        </v-list-tile-content>
-        <v-list-tile-action>
+        <v-list-item-action>
+          <v-icon v-if="item.id == currentLevelIndex" color="pink">mdi-star</v-icon>
+        </v-list-item-action>
+        <v-list-item-content>
+          <v-list-item-title v-text="item.title"></v-list-item-title>
+        </v-list-item-content>
+        <v-list-item-icon>
           <v-btn
-            icon ripple
+            icon ripple small
             title="Clear level settings"
-            @click.stop="clearLevelSettings(item)"
+
           >
-            <v-icon color="grey lighten-1">clear</v-icon>
+            <v-icon @click.stop="clearLevelSettings(item)" color="grey lighten-1">mdi-close</v-icon>
           </v-btn>
-        </v-list-tile-action>
-      </v-list-tile>
+        </v-list-item-icon>
+      </v-list-item>
     </v-list>
     <SettingsSpecific :options="currentOptions" @update="onUpdate"/>
 

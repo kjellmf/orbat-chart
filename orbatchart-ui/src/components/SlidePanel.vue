@@ -7,8 +7,8 @@
             <v-toolbar-title>{{headerTitle}}</v-toolbar-title>
           </slot>
           <v-spacer/>
-          <v-btn flat icon @click="isActive=false">
-            <v-icon>chevron_left</v-icon>
+          <v-btn text icon @click="isActive=false">
+            <v-icon>mdi-chevron-left</v-icon>
           </v-btn>
         </v-toolbar>
         <div class="slide-content">
@@ -63,7 +63,7 @@ export default {
   }
 
   .slide {
-    width: 350px;
+    width: 400px;
     height: 100%;
     border-right: 1px solid #d3d3d3;
   }

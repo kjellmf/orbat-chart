@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-btn
-      flat icon dark
+      text icon dark small
       @click="downloadAsSVG"
       title="Download as SVG"
     >
-      <v-icon>save_alt</v-icon>
+      <v-icon>mdi-download</v-icon>
     </v-btn>
   </div>
 

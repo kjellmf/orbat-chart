@@ -1,5 +1,5 @@
 <template>
-  <v-tabs v-model="activeSettingsPanel" centered>
+  <v-tabs v-model="activeSettingsPanel">
     <v-tab href="#">Chart</v-tab>
     <v-tab href="#">Level</v-tab>
     <v-tab href="#">Group</v-tab>
