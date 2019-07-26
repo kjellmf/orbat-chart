@@ -21,7 +21,6 @@
             <v-btn
               icon ripple small
               title="Clear level settings"
-
             >
               <v-icon @click.stop="clearLevelSettings(item)" color="grey lighten-1">mdi-close</v-icon>
             </v-btn>
@@ -30,7 +29,6 @@
       </v-list-item-group>
     </v-list>
     <SettingsSpecific :options="currentOptions" @update="onUpdate"/>
-
   </div>
 
 </template>
@@ -57,7 +55,7 @@ export default class SettingsLevel extends mixins(SettingsPanelMixins) {
       this.currentLevelIndex = levelIndex;
       this.item = levelIndex - 1;
       this.highlightedLevels = [levelIndex];
-    })
+    });
   }
 
   destroyed() {
