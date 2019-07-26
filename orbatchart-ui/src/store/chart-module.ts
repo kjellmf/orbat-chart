@@ -1,4 +1,4 @@
-import { GetterTree, Module, MutationTree } from "vuex";
+import { ActionTree, GetterTree, Module, MutationTree } from "vuex";
 import { RootState } from "@/store/index";
 import {
   DEFAULT_OPTIONS, LevelGroupSpecificOptions,
@@ -81,8 +81,22 @@ const mutations: MutationTree<ChartState> = {
 
   clearLevelOptions(state, id) {
     Vue.delete(state.levelOptions, id);
+  },
+
+  clearSpecificLevelOption(state, { id, name }) {
+    Vue.delete(state.levelOptions[id], name);
   }
 
+};
+
+const actions: ActionTree<ChartState, RootState> = {
+  clearSpecificLevelOption({ state, commit }, { id, name }) {
+    commit('clearSpecificLevelOption', { id, name });
+    const options = state.levelOptions[id];
+    if (options && Object.keys(options).length == 0) {
+      commit('clearLevelOptions', id);
+    }
+  }
 };
 
 const getters: GetterTree<ChartState, RootState> = {
@@ -96,6 +110,7 @@ const getters: GetterTree<ChartState, RootState> = {
 export default {
   state,
   mutations,
+  actions,
   getters
 } as Module<ChartState, RootState>;
 

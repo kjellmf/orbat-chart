@@ -28,7 +28,7 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
-    <SettingsSpecific :options="currentOptions" @update="onUpdate"/>
+    <SettingsSpecific :options="currentOptions" @update="onUpdate" @clear="clearSpecific"/>
   </div>
 
 </template>
@@ -92,9 +92,12 @@ export default class SettingsLevel extends mixins(SettingsPanelMixins) {
     this.$store.commit('clearLevelOptions', item.id);
   }
 
+  clearSpecific(name) {
+    this.$store.dispatch('clearSpecificLevelOption', { id: this.currentLevelIndex, name });
+  }
+
   onUpdate(value: PartialOrbChartOptions) {
-    this.$store.commit('updateLevelOptions', { id: this.currentLevelIndex, value })
-    //console.log(value);
+    this.$store.commit('updateLevelOptions', { id: this.currentLevelIndex, value });
   }
 };
 

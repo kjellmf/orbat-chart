@@ -7,6 +7,7 @@
       v-bind="field"
       :value="opts[field.name]"
       @input="updateValue(field, $event)"
+      @click:clear="clearField(field)"
     />
   </div>
 </template>
@@ -30,15 +31,11 @@ export default class SettingsSpecific extends Vue {
   })
   options!: PartialOrbChartOptions;
 
-  mounted() {
-    console.log(this.$options);
-  }
-
   get items() {
     //let it = SCHEMA.filter(item => !(this.opts[item.name] == null));
     let filteredItems = SCHEMA;
     return filteredItems.map((item) => {
-      return { ...item, component: 'VTextField' }
+      return { ...item, component: 'VTextField', filled: !(this.opts[item.name] == null), clearable: true }
     });
   }
 
@@ -46,21 +43,15 @@ export default class SettingsSpecific extends Vue {
     return this.options ? this.options : {};
   }
 
-  updateNum(prop, value) {
-    this.$emit('update', { ...this.options, [prop]: +value });
-  }
-
-  updateVal(prop, value) {
-    this.$emit('update', { ...this.options, [prop]: value });
-  }
-
   updateValue(item, value) {
-    let val: number | string;
-    val = value;
+    let val = value;
     if (item.type && item.type == "number") val = +value;
     this.$emit('update', { ...this.options, [item.name]: val });
   }
 
+  clearField(field) {
+    this.$nextTick(() => this.$emit('clear', field.name));
+  }
 };
 
 </script>
