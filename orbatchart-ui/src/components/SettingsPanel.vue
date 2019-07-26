@@ -99,34 +99,30 @@
   </v-tabs>
 </template>
 <script lang="ts">
-import { ChartOrientation, LevelLayout, UnitLevelDistance, isTreeLayout, isStackedTreeLayout } from "orbatchart";
-import { PanelMixins, SettingsPanelMixins } from "@/components/mixins";
 import { mixins } from "vue-class-component";
 import { Component } from "vue-property-decorator";
+import { ChartOrientation, isStackedTreeLayout, isTreeLayout, LevelLayout, UnitLevelDistance } from "orbatchart";
+import { PanelMixins, SettingsPanelMixins } from "@/components/mixins";
+import { getEnumMap } from "@/utils";
 import SettingsUnit from "@/components/SettingsUnit.vue";
 import SettingsLevel from "@/components/SettingsLevel.vue";
 import SettingsLevelGroup from "@/components/SettingsLevelGroup.vue";
 
-function getMap(myEnum) {
-  return Object.entries(myEnum).map(([key, value]) => {
-    return { text: key, value }
-  });
-}
 
 @Component({
   components: { SettingsLevelGroup, SettingsLevel, SettingsUnit }
 })
 export default class SettingsPanel extends mixins(PanelMixins, SettingsPanelMixins) {
   get orientation() {
-    return getMap(ChartOrientation);
+    return getEnumMap(ChartOrientation);
   }
 
   get unitLevelDistance() {
-    return getMap(UnitLevelDistance);
+    return getEnumMap(UnitLevelDistance);
   }
 
   get lastLevelLayout() {
-    return getMap(LevelLayout);
+    return getEnumMap(LevelLayout);
   }
 
   get noTreeOffset() {
