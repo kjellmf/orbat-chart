@@ -1,30 +1,33 @@
 <template>
   <div class="">
     <v-list dense>
-      <v-list-item
-        v-for="item in items"
-        :key="item.id"
-        @click="selectLevel(item)"
-        ripple
-        :active="item.id == currentLevelIndex"
-        href="#"
-      >
-        <v-list-item-action>
-          <v-icon v-if="item.id == currentLevelIndex" color="pink">mdi-star</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title v-text="item.title"></v-list-item-title>
-        </v-list-item-content>
-        <v-list-item-icon>
-          <v-btn
-            icon ripple small
-            title="Clear level settings"
+      <v-list-item-group v-model="item" color="primary">
+        <v-list-item
+          class="ma-n1"
+          v-for="item in items"
+          :key="item.id"
+          @click="selectLevel(item)"
+          ripple
+          :active="item.id == currentLevelIndex"
+          href="#"
+        >
+          <v-list-item-action>
+            <v-icon v-if="item.id == currentLevelIndex" color="pink">mdi-star</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.title"></v-list-item-title>
+          </v-list-item-content>
+          <v-list-item-icon>
+            <v-btn
+              icon ripple small
+              title="Clear level settings"
 
-          >
-            <v-icon @click.stop="clearLevelSettings(item)" color="grey lighten-1">mdi-close</v-icon>
-          </v-btn>
-        </v-list-item-icon>
-      </v-list-item>
+            >
+              <v-icon @click.stop="clearLevelSettings(item)" color="grey lighten-1">mdi-close</v-icon>
+            </v-btn>
+          </v-list-item-icon>
+        </v-list-item>
+      </v-list-item-group>
     </v-list>
     <SettingsSpecific :options="currentOptions" @update="onUpdate"/>
 
@@ -39,16 +42,20 @@ import { mixins } from "vue-class-component";
 import { SettingsPanelMixins } from "@/components/mixins";
 import { LevelSpecificOptions, PartialOrbChartOptions } from "orbatchart";
 import SettingsSpecific from "@/components/SettingsSpecific.vue";
+
 @Component({
   components: { SettingsSpecific }
 })
 export default class SettingsLevel extends mixins(SettingsPanelMixins) {
   currentLevelIndex: number | null = null;
+  item: number | null = null;
+
 
   mounted() {
     EventBus.$on(LEVEL_CLICK, (levelIndex: number) => {
       this.activeSettingsPanel = 1;
       this.currentLevelIndex = levelIndex;
+      this.item = levelIndex - 1;
       this.highlightedLevels = [levelIndex];
     })
   }
@@ -62,7 +69,7 @@ export default class SettingsLevel extends mixins(SettingsPanelMixins) {
   };
 
   get currentOptions() {
-    return this.currentLevelIndex? this.levelOptions[this.currentLevelIndex]: null;
+    return this.currentLevelIndex ? this.levelOptions[this.currentLevelIndex] : null;
   }
 
   get items() {
@@ -70,11 +77,11 @@ export default class SettingsLevel extends mixins(SettingsPanelMixins) {
       return { title: `Level ${key}`, id: key }
     });
 
-   /* items.sort((a, b) => {
-      if (a.id < b.id) return -1;
-      if (a.id > b.id) return 0;
-      return 0;
-    });*/
+    /* items.sort((a, b) => {
+       if (a.id < b.id) return -1;
+       if (a.id > b.id) return 0;
+       return 0;
+     });*/
     return items;
   }
 
@@ -88,7 +95,7 @@ export default class SettingsLevel extends mixins(SettingsPanelMixins) {
   }
 
   onUpdate(value: PartialOrbChartOptions) {
-    this.$store.commit('updateLevelOptions', {id: this.currentLevelIndex, value})
+    this.$store.commit('updateLevelOptions', { id: this.currentLevelIndex, value })
     //console.log(value);
   }
 };
