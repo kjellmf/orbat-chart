@@ -20,10 +20,11 @@
     <v-content>
       <v-container fluid fill-height class="py-0 px-0 mx-0 my-0">
         <v-layout>
-          <v-flex class="sidebar" style="z-index: 4">
+          <v-flex class="sidebar pa-1" style="z-index: 4">
             <v-app-bar-nav-icon dark small @click.stop="drawer = !drawer"/>
             <v-btn
               text icon dark small
+              class="mb-1"
               @click="orbatPanel = !orbatPanel"
               :class="{'v-btn--active': orbatPanel}"
               title="Toggle ORBAT panel"
