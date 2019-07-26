@@ -81,17 +81,17 @@
         />
       </div>
     </v-tab-item>
-    <v-tab-item>
+    <v-tab-item eager>
       <div class="pa-3">
         <SettingsLevel/>
       </div>
     </v-tab-item>
-    <v-tab-item>
+    <v-tab-item eager>
       <div class="pa-3">
         <SettingsLevelGroup/>
       </div>
     </v-tab-item>
-    <v-tab-item>
+    <v-tab-item eager>
       <div class="pa-3">
         <SettingsUnit/>
       </div>
