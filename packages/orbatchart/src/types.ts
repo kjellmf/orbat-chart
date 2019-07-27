@@ -90,6 +90,7 @@ export interface OrbChartOptions {
   orientation: ChartOrientation;
   unitLevelDistance: UnitLevelDistance;
   lastLevelLayout: LevelLayout;
+  layout: LevelLayout;
   verticalAlignment: VerticalAlignment;
   levelPadding: number;
   treeOffset: number;

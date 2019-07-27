@@ -15,6 +15,7 @@ export const DEFAULT_OPTIONS = {
   orientation: ChartOrientation.Top,
   unitLevelDistance: UnitLevelDistance.Fixed,
   lastLevelLayout: LevelLayout.Horizontal,
+  layout: LevelLayout.Horizontal,
   verticalAlignment: VerticalAlignment.Top,
   levelPadding: 175,
   treeOffset: TREE_LEFT_RIGHT_OFFSET,
