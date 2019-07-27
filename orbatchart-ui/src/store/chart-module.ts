@@ -21,7 +21,8 @@ const state: ChartState = {
     maxLevels: 4,
     lastLevelLayout: LevelLayout.TreeRight
   },
-  levelGroupOptions: {},
+  //levelGroupOptions: {},
+  levelGroupOptions: { "u0xGEGuOLzIcIirsioK0h": { symbolSize: 20, treeOffset: 120, connectorOffset: 20} },
   levelOptions: {
     3: { levelPadding: 10, symbolSize: 25 },
     2: { symbolSize: 40 },
@@ -58,12 +59,12 @@ const mutations: MutationTree<ChartState> = {
     state.levelOptions = value;
   },
 
-  setLevelGroupOptions(state, value: LevelGroupSpecificOptions) {
-    state.levelGroupOptions = value;
-  },
-
   setUnitOptions(state, value: UnitSpecificOptions) {
     state.unitOptions = value;
+  },
+
+  clearLevelOptions(state, id) {
+    Vue.delete(state.levelOptions, id);
   },
 
   updateLevelOptions(state, { id, value }) {
@@ -71,20 +72,28 @@ const mutations: MutationTree<ChartState> = {
     //mapHelper(state.levelOptions, id, value)
   },
 
+  clearSpecificLevelOption(state, { id, name }) {
+    Vue.delete(state.levelOptions[id], name);
+  },
+
+  setLevelGroupOptions(state, value: LevelGroupSpecificOptions) {
+    state.levelGroupOptions = value;
+  },
+
   updateLevelGroupOptions(state, { id, value }) {
-    mapHelper(state.levelGroupOptions, id, value)
+    Vue.set(state.levelGroupOptions, id, value)
+  },
+
+  clearLevelGroupOptions(state, id) {
+    Vue.delete(state.levelGroupOptions, id);
+  },
+
+  clearSpecificLevelGroupOption(state, {id, name}) {
+    Vue.delete(state.levelGroupOptions[id], name);
   },
 
   updateUnitOptions(state, { id, value }) {
-    mapHelper(state.unitOptions, id, value)
-  },
-
-  clearLevelOptions(state, id) {
-    Vue.delete(state.levelOptions, id);
-  },
-
-  clearSpecificLevelOption(state, { id, name }) {
-    Vue.delete(state.levelOptions[id], name);
+    Vue.set(state.unitOptions, id, value)
   }
 
 };
@@ -95,6 +104,14 @@ const actions: ActionTree<ChartState, RootState> = {
     const options = state.levelOptions[id];
     if (options && Object.keys(options).length == 0) {
       commit('clearLevelOptions', id);
+    }
+  },
+
+  clearSpecificLevelGroupOption({ state, commit }, { id, name }) {
+    commit('clearSpecificLevelGroupOption', { id, name });
+    const options = state.levelGroupOptions[id];
+    if (options && Object.keys(options).length == 0) {
+      commit('clearLevelGroupOptions', id);
     }
   }
 };

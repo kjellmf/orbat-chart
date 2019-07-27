@@ -22,6 +22,7 @@ const SCHEMA = [
   { label: "Symbol size", type: "number", name: "symbolSize", min: 0 },
   { label: "Level padding", type: "number", name: "levelPadding", min: 0 },
   { label: "Connector offset", type: "number", name: "connectorOffset", min: 0 },
+  { label: "Tree offset", type: "number", name: "treeOffset", min: 0 },
   { label: "Layout", type: "select", name: "layout", items: getEnumMap(LevelLayout) },
   { label: "Unit spacing", type: "select", name: "unitLevelDistance", items: getEnumMap(UnitLevelDistance) },
   { label: "Debug mode", type: "boolean", name: "debug" }
