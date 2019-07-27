@@ -28,7 +28,7 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
-    <SettingsSpecific :options="currentOptions" @update="onUpdate" @clear="clearSpecific"/>
+    <SettingsSpecific v-if="currentLevelIndex != null" :options="currentOptions" @update="onUpdate" @clear="clearSpecific"/>
   </div>
 
 </template>
