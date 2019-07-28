@@ -13,6 +13,7 @@
 </template>
 
 <script lang="ts">
+import debounce from "lodash.debounce";
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { LevelLayout, PartialOrbChartOptions, UnitLevelDistance } from "orbatchart";
 import { VTextField, VCheckbox, VSelect } from "vuetify/lib";
@@ -58,6 +59,7 @@ export default class SettingsSpecific extends Vue {
     }
   })
   options!: PartialOrbChartOptions;
+  debouncedUpdate = debounce(this._updateValue, 500);
 
   get items() {
     //let it = SCHEMA.filter(item => !(this.opts[item.name] == null));
@@ -78,13 +80,20 @@ export default class SettingsSpecific extends Vue {
   }
 
   updateValue(item, value) {
+    this.debouncedUpdate(item, value);
+  }
+
+  _updateValue(item, value) {
     let val = value;
     if (item.type && item.type == "number") val = +value;
     this.$emit('update', { ...this.options, [item.name]: val });
   }
 
   clearField(field) {
-    this.$nextTick(() => this.$emit('clear', field.name));
+    this.$nextTick(() => {
+      this.debouncedUpdate.cancel();
+      this.$emit('clear', field.name)
+    });
   }
 };
 
