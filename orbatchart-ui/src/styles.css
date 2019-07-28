@@ -15,6 +15,10 @@ html {
   flex: 0;
 }
 
+.inline-symbol {
+  vertical-align: text-top;
+}
+
 @media print {
   .sidebar, .slide {
     display: none;

@@ -22,12 +22,13 @@
               icon ripple small
               title="Clear level settings"
             >
-              <v-icon @click.stop="clearLevelSettings(item)" color="grey lighten-1">mdi-close</v-icon>
+              <v-icon @click.stop="clearLevelGroupSettings(item)" color="grey lighten-1">mdi-close</v-icon>
             </v-btn>
           </v-list-item-icon>
         </v-list-item>
       </v-list-item-group>
     </v-list>
+    <div v-if="currentParentUnit">Current group <MilSymbol class="inline-symbol" :sidc="currentParentUnit.sidc"/> {{currentParentUnit.name}} ... </div>
     <SettingsSpecific :options="currentOptions" @update="onUpdate" @clear="clearSpecific"/>
   </div>
 </template>
@@ -67,6 +68,10 @@ export default class SettingsLevelGroup extends mixins(SettingsPanelMixins) {
     return this.$store.getters.unitMap;
   }
 
+  get currentParentUnit() {
+    return this.currentLevelGroupId ? this.unitMap[this.currentLevelGroupId] : null;
+  }
+
   get items() {
     return Object.entries(this.levelGroupOptions)
       .map(([key, value]) => {
@@ -90,6 +95,10 @@ export default class SettingsLevelGroup extends mixins(SettingsPanelMixins) {
 
   onUpdate(value: PartialOrbChartOptions) {
     this.$store.commit('updateLevelGroupOptions', { id: this.currentLevelGroupId, value });
+  }
+
+  clearLevelGroupSettings(item) {
+    this.$store.commit('clearLevelGroupOptions', item.id);
   }
 
 };
