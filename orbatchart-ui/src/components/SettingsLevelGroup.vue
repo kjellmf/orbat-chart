@@ -28,7 +28,12 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
-    <div v-if="currentParentUnit">Current group <MilSymbol class="inline-symbol" :sidc="currentParentUnit.sidc"/> {{currentParentUnit.name}} ... </div>
+    <v-divider/>
+    <div v-if="currentParentUnit"><span class="subtitle-2">Current group
+      <MilSymbol class="inline-symbol"
+                 :sidc="currentParentUnit.sidc"/> {{currentParentUnit.name}} ... </span>
+    </div>
+    <v-divider/>
     <SettingsSpecific :options="currentOptions" @update="onUpdate" @clear="clearSpecific"/>
   </div>
 </template>
@@ -39,20 +44,29 @@ import { SettingsPanelMixins } from "@/components/mixins";
 import MilSymbol from "@/components/MilSymbol.vue";
 import { mixins } from "vue-class-component";
 import SettingsSpecific from "@/components/SettingsSpecific.vue";
-import { LevelGroupSpecificOptions, PartialOrbChartOptions } from "orbatchart";
+import { ChartItemType, LevelGroupSpecificOptions, PartialOrbChartOptions } from "orbatchart";
 
 @Component({
   components: { SettingsSpecific, MilSymbol }
 })
 export default class SettingsLevelGroup extends mixins(SettingsPanelMixins) {
-  currentLevelGroupId: string| number | null = null;
-  itemIndex = -1;
   mounted() {
     EventBus.$on(LEVELGROUP_CLICK, parentId => {
       this.activeSettingsPanel = 2;
-      this.currentLevelGroupId = parentId;
-      this.itemIndex = this.items.findIndex(value => value.id === parentId);
+      this.$store.dispatch("selectChartItem", {itemType: ChartItemType.LevelGroup, id:parentId});
     })
+  }
+
+  get currentLevelGroupId() {
+    return this.$store.state.ui.selectedLevelGroupId;
+  }
+
+  get itemIndex() {
+    return this.items.findIndex(value => value.id === this.currentLevelGroupId);
+  }
+
+  set itemIndex(value) {
+
   }
 
   get currentOptions() {
@@ -75,8 +89,8 @@ export default class SettingsLevelGroup extends mixins(SettingsPanelMixins) {
   get items() {
     return Object.entries(this.levelGroupOptions)
       .map(([key, value]) => {
-        let unit = this.unitMap[key];
-          return { name: unit.name, id: key, sidc:unit.sidc }
+          let unit = this.unitMap[key];
+          return { name: unit.name, id: key, sidc: unit.sidc }
         }
       );
   }
@@ -90,7 +104,7 @@ export default class SettingsLevelGroup extends mixins(SettingsPanelMixins) {
   }
 
   selectLevelGroup(item) {
-    this.currentLevelGroupId = item.id;
+    this.$store.dispatch("selectChartItem", {itemType: ChartItemType.LevelGroup, id:item.id});
   }
 
   onUpdate(value: PartialOrbChartOptions) {

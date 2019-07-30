@@ -44,6 +44,12 @@ export enum VerticalAlignment {
   Bottom = "BOTTOM"
 }
 
+export enum ChartItemType {
+  Level,
+  LevelGroup,
+  Unit,
+}
+
 export interface Size {
   width: number;
   height: number

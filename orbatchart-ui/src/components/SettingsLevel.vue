@@ -28,7 +28,8 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
-    <SettingsSpecific v-if="currentLevelIndex != null" :options="currentOptions" @update="onUpdate" @clear="clearSpecific"/>
+    <SettingsSpecific v-if="currentLevelIndex != null" :options="currentOptions" @update="onUpdate"
+                      @clear="clearSpecific"/>
   </div>
 
 </template>
@@ -38,28 +39,33 @@ import { Component, Vue } from "vue-property-decorator";
 import { EventBus, LEVEL_CLICK } from "@/eventbus";
 import { mixins } from "vue-class-component";
 import { SettingsPanelMixins } from "@/components/mixins";
-import { LevelSpecificOptions, PartialOrbChartOptions } from "orbatchart";
+import { ChartItemType, LevelSpecificOptions, PartialOrbChartOptions } from "orbatchart";
 import SettingsSpecific from "@/components/SettingsSpecific.vue";
 
 @Component({
   components: { SettingsSpecific }
 })
 export default class SettingsLevel extends mixins(SettingsPanelMixins) {
-  currentLevelIndex: number | null = null;
-  item: number | null = null;
-
-
   mounted() {
     EventBus.$on(LEVEL_CLICK, (levelIndex: number) => {
       this.activeSettingsPanel = 1;
-      this.currentLevelIndex = levelIndex;
-      this.item = levelIndex - 1;
-      this.highlightedLevels = [levelIndex];
+      this.$store.dispatch("selectChartItem", { itemType: ChartItemType.Level, id: levelIndex });
     });
+  }
+
+  get item() {
+    return this.currentLevelIndex - 1;
+  }
+
+  set item(value) {
   }
 
   destroyed() {
     EventBus.$off(LEVEL_CLICK);
+  }
+
+  get currentLevelIndex() {
+    return this.$store.state.ui.selectedLevelIndex;
   }
 
   get levelOptions(): LevelSpecificOptions {
@@ -84,7 +90,7 @@ export default class SettingsLevel extends mixins(SettingsPanelMixins) {
   }
 
   selectLevel(item) {
-    this.currentLevelIndex = item.id;
+    this.$store.dispatch("selectChartItem", { itemType: ChartItemType.Level, id: item.id });
     this.highlightedLevels = [item.id];
   }
 
