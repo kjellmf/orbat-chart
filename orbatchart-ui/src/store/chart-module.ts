@@ -94,7 +94,15 @@ const mutations: MutationTree<ChartState> = {
 
   updateUnitOptions(state, { id, value }) {
     Vue.set(state.unitOptions, id, value)
-  }
+  },
+
+  clearUnitOptions(state, id) {
+    Vue.delete(state.unitOptions, id);
+  },
+
+  clearSpecificUnitOption(state, {id, name}) {
+    Vue.delete(state.unitOptions[id], name);
+  },
 
 };
 
@@ -113,7 +121,16 @@ const actions: ActionTree<ChartState, RootState> = {
     if (options && Object.keys(options).length == 0) {
       commit('clearLevelGroupOptions', id);
     }
+  },
+
+    clearSpecificUnitOption({ state, commit }, { id, name }) {
+    commit('clearSpecificUnitOption', { id, name });
+    const options = state.unitOptions[id];
+    if (options && Object.keys(options).length == 0) {
+      commit('clearUnitOptions', id);
+    }
   }
+
 };
 
 const getters: GetterTree<ChartState, RootState> = {

@@ -77,6 +77,7 @@ export default class MainView extends mixins(PanelMixins, SettingsPanelMixins) {
 
   onUnitClick(unit) {
     console.log("Clicked", unit.unit.name);
+    EventBus.$emit(UNIT_CLICK, unit.unit.id);
   };
 
   onLevelClick(levelNumber) {
