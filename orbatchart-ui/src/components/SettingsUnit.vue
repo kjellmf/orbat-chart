@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-list dense>
+      <v-subheader>Units with settings</v-subheader>
       <v-list-item-group v-model="itemIndex" color="primary">
         <v-list-item
           class="ma-n1"

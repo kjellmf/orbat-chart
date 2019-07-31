@@ -1,6 +1,7 @@
 <template>
   <div class="">
     <v-list dense>
+      <v-subheader>Levels</v-subheader>
       <v-list-item-group v-model="item" color="primary">
         <v-list-item
           class="ma-n1"
