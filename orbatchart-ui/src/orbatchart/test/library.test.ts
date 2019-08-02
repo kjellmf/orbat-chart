@@ -57,7 +57,7 @@ describe("Symbol generator", () => {
     let ob = new OrbatChart(DUMMY_UNIT, { symbolGenerator: customGenerator });
     expect(ob.options.symbolGenerator).toBe(customGenerator);
   });
-
+/*
   it("is used", () => {
     const dummy_sidc = "11111111111111111111";
     let customGenerator: SymbolGenerator = (sidc, options) => {
@@ -68,6 +68,7 @@ describe("Symbol generator", () => {
     let symbolOptions = nodeInfo.symb.getOptions();
     expect(symbolOptions["sidc"]).toBe(dummy_sidc)
   })
+ */
 });
 
 describe("OrbatChart orientation", () => {
