@@ -11,7 +11,35 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --modern",
     "lint": "vue-cli-service lint",
-    "deploy": "vue-cli-ghpages"
+    "deploy": "vue-cli-ghpages",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "jest": {
+    "roots": ["<rootDir>/src"],
+    "transform": {
+      ".(ts|tsx)": "ts-jest"
+    },
+    "testEnvironment": "jsdom",
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 95,
+        "lines": 95,
+        "statements": 95
+      }
+    },
+    "collectCoverage": false
   },
   "dependencies": {
     "d3-selection": "^1.4.0",
@@ -28,12 +56,16 @@
   "devDependencies": {
     "@types/d3-selection": "^1.4.1",
     "@types/file-saver": "^2.0.1",
+    "@types/jest": "^23.3.14",
     "@types/lodash.debounce": "^4.0.6",
     "@vue/cli-plugin-babel": "^3.9.2",
     "@vue/cli-plugin-typescript": "^3.9.0",
     "@vue/cli-service": "^3.9.3",
+    "jest": "^23.6.0",
+    "jest-config": "^23.6.0",
     "sass": "^1.22.8",
     "sass-loader": "^7.1.0",
+    "ts-jest": "^23.10.5",
     "typescript": "^3.5.1",
     "vue-cli-ghpages": "^1.0.0",
     "vue-cli-plugin-vuetify": "^0.6.1",

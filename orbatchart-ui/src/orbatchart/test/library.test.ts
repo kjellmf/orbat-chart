@@ -1,8 +1,7 @@
-import { OrbatChart } from "../src/orbchart";
-import { ChartOrientation, UnitNodeInfo, SymbolGenerator, Unit } from "../src/types";
+import { ChartOrientation, UnitNodeInfo, SymbolGenerator, Unit, BasicUnitNode } from "../index";
 import { ORBAT1 } from "./testorbats";
 import { Symbol } from "milsymbol";
-import { DEFAULT_OPTIONS } from "../src/defaults";
+import { DEFAULT_OPTIONS, OrbatChart } from "../index";
 
 // @ts-ignore
 SVGElement.prototype.getBBox = () => {

@@ -1,4 +1,4 @@
-import { Unit } from "../src/types";
+import { Unit } from "../types";
 
 export const ORBAT1: Unit = {
   name: "A Bde",

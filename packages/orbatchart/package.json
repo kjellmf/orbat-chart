@@ -10,9 +10,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c",
-    "watch": "rollup -cw",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "watch": "rollup -cw"
   },
   "author": "Kjell Magne Fauske <kjellmf@gmail.com>",
   "repository": {
@@ -20,40 +18,11 @@
     "url": "https://github.com/kjellmf/orbat-chart.git"
   },
   "license": "MIT",
-  "jest": {
-    "transform": {
-      ".(ts|tsx)": "ts-jest"
-    },
-    "testEnvironment": "jsdom",
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/test/"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 90,
-        "functions": 95,
-        "lines": 95,
-        "statements": 95
-      }
-    },
-    "collectCoverage": false
-  },
   "devDependencies": {
     "@types/d3-selection": "^1.3.2",
-    "@types/jest": "^23.3.3",
-    "jest": "^23.6.0",
-    "jest-config": "^23.6.0",
     "rollup": "^0.66.2",
     "rollup-plugin-typescript": "^1.0.0",
     "rollup-plugin-typescript2": "^0.17.1",
-    "ts-jest": "^23.10.3",
     "tslib": "^1.9.3",
     "typescript": "^3.1.1"
   },

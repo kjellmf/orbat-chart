@@ -192,7 +192,7 @@ class OrbatChart {
   svg!: SVGElementSelection;
   renderedChart!: RenderedChart;
 
-  constructor(private rootNode: Unit, options: Partial<OrbChartOptions> = {}, private specificOptions: SpecificOptions) {
+  constructor(private rootNode: Unit, options: Partial<OrbChartOptions> = {}, private specificOptions: SpecificOptions={}) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
     if (rootNode) this._computeOrbatInfo(rootNode);
   }
