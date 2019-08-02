@@ -11,7 +11,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --modern",
     "lint": "vue-cli-service lint",
-    "deploy": "vue-cli-ghpages --CNAME=orbat-chart.milsymb.net"
+    "deploy": "vue-cli-ghpages"
   },
   "dependencies": {
     "d3-selection": "^1.4.0",
