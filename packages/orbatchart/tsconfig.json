@@ -2,6 +2,7 @@
   "compilerOptions": {
     "declaration": true,
     "declarationDir": "./dist",
+    "rootDir": "../../orbatchart-ui/src/orbatchart",
     "module": "es6",
     "noImplicitAny": false,
     "outDir": "./dist",
@@ -12,10 +13,11 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "rootDirs": ["../../orbatchart-ui/src/orbatchart/"]
   },
   "include": [
-    "src/**/*"
+    "../../orbatchart-ui/src/orbatchart/**/*"
   ],
   "exclude": [
     "node_modules"
