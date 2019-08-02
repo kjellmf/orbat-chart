@@ -1,7 +1,7 @@
 import { GetterTree, Module, MutationTree } from "vuex";
 import { RootState } from "@/store/index";
 import { Unit } from "orbatchart";
-import { walkTree } from "../../../packages/orbatchart/src/utils";
+import { walkTree } from "@/orbatchart/utils";
 
 export interface OrbatState {
   rootUnits: Unit[];

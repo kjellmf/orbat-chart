@@ -5,7 +5,7 @@ module.exports = {
     resolve: {
       alias: {
         'milsymbol': path.resolve(path.join(__dirname, 'node_modules', 'milsymbol')),
-        'orbatchart': path.resolve(path.join(__dirname, '../packages/orbatchart/src', ))
+        'orbatchart': path.resolve(path.join(__dirname, 'src/orbatchart', ))
       },
     },
   }

@@ -20,7 +20,7 @@
         "src/*"
       ],
       "orbatchart": [
-        "../packages/orbatchart/src/"
+        "src/orbatchart"
       ]
     },
     "lib": [
@@ -34,7 +34,6 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "../packages/orbatchart/src/**/*.ts",
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],

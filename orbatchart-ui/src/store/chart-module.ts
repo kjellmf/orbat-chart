@@ -21,22 +21,9 @@ const state: ChartState = {
     maxLevels: 4,
     lastLevelLayout: LevelLayout.TreeRight
   },
-  //levelGroupOptions: {},
-  levelGroupOptions: { "u0xGEGuOLzIcIirsioK0h": { symbolSize: 20, treeOffset: 120, connectorOffset: 20} },
-  levelOptions: {
-    3: { levelPadding: 10, symbolSize: 25 },
-    2: { symbolSize: 40 },
-    1: { symbolSize: 40 }
-  },
+  levelOptions: {},
+  levelGroupOptions: {},
   unitOptions: {}
-  /*
-  levelOptions: { 1: { symbolSize: 50, debug: true, connectorOffset: 33 } },
-  levelGroupOptions: { "u0xGEGuOLzIcIirsioK0h": { symbolSize: 20, treeOffset: 120, connectorOffset: 20, debug: true } },
-  unitOptions: {
-    "u0xGEGuOLzIcIirsioK0h": { symbolSize: 40 },
-    "bJewqRWgkcxt3Lt53sz_c": { treeOffset: 60, symbolSize: 30, connectorOffset: 40 }
-  }
-   */
 };
 
 function mapHelper(entity: any, id, data: any) {
