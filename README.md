@@ -1,6 +1,6 @@
 # ORBAT Chart
 
-**Development of this librarly has been moved to https://github.com/kjellmf/orbat-mapper for now**.
+**Development of this libraly has been moved to https://github.com/orbat-mapper/orbat-mapper**.
 
 A library for creating Order of Battle (ORBAT) charts. Similar to organization charts. 
 
