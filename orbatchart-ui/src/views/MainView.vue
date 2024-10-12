@@ -2,6 +2,8 @@
   <v-layout fill-height>
     <v-flex class="panel" style="z-index:3">
       <SlidePanel v-model="orbatPanel" header-title='ORBAT' @onSlide="onSlide">
+        <p class="px-4 heading">This project is deprecated. Try <a href="https://orbat-mapper.app">orbat-mapper.app</a>
+          instead</p>
         <OrbatTree :rootUnits="orbat" @selectunit="onSelectUnit"/>
       </SlidePanel>
     </v-flex>
